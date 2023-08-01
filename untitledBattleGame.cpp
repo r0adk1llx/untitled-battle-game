@@ -24,7 +24,8 @@ bool secretsEnabled = false;
 
 // debug
 
-bool enableDebug = false;
+bool enableDesbug = false;
+bool setFirstTime = false;
 
 // player stats
 
@@ -32,47 +33,65 @@ int playerHealth; // pretty self explanatory
 int playerStrength; // adds (or subtracts) from attack damage
 int playerLuck; // increases or decreases various stats and chances
 int playerAccuracy; // adds to the attack hit chance roll
-int playerCash;
-int playerStasisCash;
-
-int turnsPassed; // for setting up turn based moves
-int roomsPassed;
+int playerCash; // shall not be referred to as cash in game. because its really not. credits maybe. currency possibly. cash, no.
+int playerStasisCash; // allows less errors when calculating current credit amount
 
 // vague check of stats
 
 bool obsfucateStats = true;
 
-string obPlayerHealth;
-string obPlayerStrength;
-string obPlayerLuck;
-string obPlayerAccuracy;
+string obPlayerHealth; // makes for some nice flavour text
+string obPlayerStrength; // also reads real nice
+string obPlayerLuck; // read above
+string obPlayerAccuracy; // observe the opposite of below this line
 
 // enemy stats
 
 int enemyType;
-string enemyName;
-int enemyHealth;
-int enemyStrength;
-int enemyAccuracy;
+string enemyName; // sets the output name and is for any necessary checks
+string enemyArticle; // for phrasing text output in a cohesive way
+string capitalArticle; // because setting a function to auto-capitalise is too hard (I don't know how.)
+int enemyHealth; // self explanatory
+int enemyStrength; // see above
+int enemyAccuracy; // see two above
+int enemyCashWorth; // both cash worth and min should equal to the max. ie. if max is 10 and min is 3 then worth is 7
+int enemyCashMin; // check line before
+bool enemyIntimidation; // allows enemies to have opening moves/first attacks
+bool enemyTakesAdvantage; // usually true, but can be false. used mostly for Crit Fails
 
 // random number catch
 
-int playerAttRoll;
-int playerActRoll;
+int playerAttRoll; // player attack
+int playerActRoll; // player action (why these are in two different orders is honestly beyond me)
 int playerBlockRoll;
-int EnemyActRoll;
+int enemyActRoll; // enemy action
+int enemyAttRoll; // enemy attack
 int playerDodgeRoll;
 int LuckRoll;
+int playerCritFail;
+int playerOuch;
 
 int roomTypeNum;
 
 int cashEarned;
+
+// Random Text Cycle
+
+int randTextNum;
+
+string playerBigHit;
 
 // floor data
 
 bool isShopping = false;
 bool isBattling = false;
 bool battleLoop = false;
+
+// track game stats
+
+int turnsPassed; // for setting up turn based moves
+int roomsPassed;
+int enemiesDead;
 
 // release variables
 
@@ -84,7 +103,7 @@ int minorVersion = 0;
 
 int main () {
 
-    enableDebug = false;
+    enableDesbug = false;
 
     releaseState = "alpha";
     majorVersion = 0;
@@ -104,6 +123,14 @@ int main () {
 
     cout << "Version " << releaseState << " " << majorVersion << "." << shareVersion << "." << revisionVersion << "." << minorVersion ; //ver number is major.share release.revision.minor
 
+    if (enableDesbug = true) {
+
+        cout << "\n\n";
+
+        cout << "[DEBUG]";
+
+    };
+
     if (secretsEnabled == true) {
 
         cout << "\n\n";
@@ -121,13 +148,29 @@ int main () {
 
     if (playerEntry == "debug" || playerEntry == "Debug") {
 
-        if (enableDebug = true) {
+        // bool enableDesbug;
+
+        setFirstTime = true;
+
+        if (setFirstTime = true) {
+
+            cout << "[DEBUG ENABLED]";
+
+            enableDesbug = true;
+
+            cout << "\n\n";
+
+            system ("pause");
+
+            goto startPage;
+
+        } else if (enableDesbug = true) {
 
             cout << "\n\n";
 
             cout << "[DEBUG DISABLED]";
 
-            enableDebug = false;
+            enableDesbug = false;
 
             cout << "\n\n";
 
@@ -135,21 +178,11 @@ int main () {
 
             goto startPage;
 
-        }
+        } else {
 
-        if (enableDebug = false) {
+            setFirstTime = false;
 
-            cout << "[DEBUG ENABLED]";
-
-            enableDebug = true;
-
-            cout << "\n\n";
-
-            system ("pause");
-
-            goto startPage;
-
-        }
+        };
 
     };
 
@@ -215,11 +248,15 @@ int main () {
         playerLuck = rand () % 7;
         playerAccuracy = rand () % 5 + 10;
 
-        if (enableDebug = true) {
 
-            // obsfucateStats = false;
+
+        if (enableDesbug = true) {
+
+            obsfucateStats = false;
 
         };
+
+
 
         // health ob
 
@@ -307,7 +344,9 @@ int main () {
 
         roomTypeNum = rand () % 10;
 
-        cout << "Just before you enter the room, you note that:\n\n";
+        cout << "Just before you enter the room, you note that:";
+
+        cout << "\n\n---------\n\n";
 
         if (obsfucateStats == true) {
 
@@ -344,11 +383,11 @@ int main () {
 
             cout << "\n\n";
 
-            cout << "You are holding " << playerCash << "$.";
+            cout << "You have " << playerCash << " credits.";
 
         };
 
-        cout << "\n\n";
+        cout << "\n\n---------\n\n";
 
         system ("pause");
 
@@ -399,14 +438,20 @@ int main () {
 
         do {
 
+            randTextNum = rand () % 19 + 1;
+
             enemyType = rand () % 10;
 
             if (enemyType >= 5) {
 
                 enemyName = "Test Dummy";
-                enemyHealth = 25;
+                enemyArticle = "the";
+                capitalArticle = "The";
+                enemyHealth = 25 + (playerStrength / 3);
                 enemyStrength = 5;
                 enemyAccuracy = 10;
+                enemyCashWorth = 9;
+                enemyCashMin = 1;
 
                 battleLoop = true;
 
@@ -456,27 +501,151 @@ int main () {
                 cout << "\n[1] Attack!";
                 cout << "\n[2] Block.";
 
-                cout << "\n\nNow this would usually allow you to fight the enemy in front of you\n";
-                cout << "but Im out of time to do so.";
-                cout << "\nSo *ka-blam*.";
+                // cout << "\n\nNow this would usually allow you to fight the enemy in front of you\n";
+                // cout << "but Im out of time to do so.";
+                // cout << "\nSo *ka-blam*.";
 
                 cout << "\n\n";
 
-                enemyHealth = 0;
+                getline (cin, playerEntry);
 
-                if (enemyHealth == 0) {
+                if (playerEntry == "1" || playerEntry == "Attack" || playerEntry == "attack" || playerEntry == "a" || playerEntry == "A") {
+
+                  // player attack
+
+                  if (playerAccuracy > 10) {
+
+                    playerActRoll = rand () % 20 + (playerAccuracy / 2);
+
+                  } else {
+
+                    playerActRoll = rand () % 20 - (playerAccuracy / 2);
+
+                  };
+
+                  if (playerActRoll >= 10 && playerActRoll != 20) {
+
+                    if (playerStrength > 10) {
+
+                        playerAttRoll = rand () % 20 + (playerStrength / 2);
+
+                    } else {
+
+                        playerAttRoll = rand () % 20 - (playerStrength / 2);
+
+                    };
+
+                    if (playerAttRoll < (playerStrength / 4)) {
+
+                        playerAttRoll = playerStrength / 4;
+
+                    };
+
+                    cout << "\n\n";
+
+                    cout << "You hit " << enemyArticle << " " << enemyName << " for " << playerAttRoll << ".";
+
+                    enemyHealth = enemyHealth - playerAttRoll;
+
+                    } else if (playerActRoll == 20) {
+
+                        playerAttRoll = (rand () % 15 + 5) + playerStrength;
+
+                        if (randTextNum = 1) {
+
+                            playerBigHit = "Smaaaash!";
+
+                        } else if (randTextNum == 20){
+
+                            playerBigHit = "Critical Hit!";
+
+                        }  else {
+
+                            playerBigHit = "Whoa!";
+
+                        };
+
+                        cout << "\n\n";
+
+                        cout << "[" << playerBigHit << "]\n\n" << "You hit " << enemyArticle << " " << enemyName << " for " << playerAttRoll << ".";
+
+                        enemyHealth = enemyHealth - playerAttRoll;
+
+                    } else if (playerActRoll < 10 && playerActRoll != 1) {
+
+                        cout << "\n\n";
+
+                        cout << "You missed.";
+
+                    } else if (playerActRoll == 1) {
+
+                        playerCritFail = rand () % 100;
+
+                        // if it lands on 4, 18, 47, 58, or 83 then it will trigger crit fail
+
+                        // if (playerCritFail = 47 || playerCritFail = 83 || playerCritFail = 18 || playerCritFail = 4 || playerCritFail = 58) (for historical reasons)
+
+                        if (playerCritFail == 4 || playerCritFail == 18 || playerCritFail == 47 || playerCritFail == 58 || playerCritFail == 83) {
+
+                            playerOuch = rand () % 10 + 15;
+
+                            cout << "In your attempt to hit " << enemyArticle << " " << enemyName << ", you tripped and took " << playerOuch << " damage.";
+
+                            playerHealth = playerHealth - playerOuch;
+
+                        } else {
+
+                            cout << "You missed.";
+
+                        };
+
+                    } else {
+
+                        cout << "You missed.";
+
+                    };
+
+                    if (enemyHealth <= 0) {
+
+                        enemyHealth = 0;
+
+                    };
+
+                    cout << "\n\n";
+
+                    cout << "The " << enemyName << " has " << enemyHealth << " HP left.";
+
+                    cout << "\n\n";
+
+                  };
+
+                  system ("pause");
+
+                  // enemy attack goes below here
+
+                // };
+
+            // cout << "\n\n";
+
+                // enemyHealth = 0;
+
+                if (enemyHealth <= 0) {
+
+                    system ("cls");
+
+                    cout << "\n\n";
 
                     cout << enemyName << " Defeated.";
 
                     cout << "\n\n";
 
-                    cashEarned = rand () % 9 + 1;
+                    cashEarned = rand () % enemyCashWorth + enemyCashMin;
 
                     playerStasisCash = playerCash;
 
                     playerCash = playerStasisCash + cashEarned;
 
-                    cout << cashEarned << "$ earned.";
+                    cout << cashEarned << " currency earned.";
 
                     cout << "\n\n";
 
@@ -484,7 +653,28 @@ int main () {
 
                     battleLoop = false;
 
-                }
+                } else if (enemyHealth > 0){
+
+                    system ("cls");
+
+                    cout << "The " << enemyName << " is standing there, menacingly.";
+
+                } else {
+
+                    system ("cls");
+
+                    cout << "[ERROR]";
+
+                    cout << "\n\n";
+
+                    cout << "Something Goofed.";
+
+                    system ("pause");
+
+                    break;
+                    // cout << "\n\n";
+
+                };
 
             }
             while (battleLoop == true);
