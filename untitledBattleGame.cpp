@@ -45,6 +45,9 @@ int playerCash; // shall not be referred to as cash in game. because its really 
 int playerStasisCash; // allows less errors when calculating current credit amount
 int totalPlayerCash;
 
+bool settingStats;
+bool confirmingStats;
+
 // player states
 
 bool isBlocking;
@@ -363,10 +366,156 @@ int main () {
 
         enemyName = "Void";
 
+        settingStats = true;
+
+        do {
+
+            system ("cls");
+
+            system ("color 08");
+
+            playerAccuracy = 30;
+
+            cout << "Enter how many points you would like to give to strength. (1-30 or random)";
+
+            cout << "\n\n";
+
+            cout << "> ";
+
+            getline (cin, playerEntry);
+
+            if (playerEntry == "random" || playerEntry == "rand" || playerEntry == "Random" || playerEntry == "Rand" || playerEntry == "r" || playerEntry == "R") {
+
+                playerAccuracy = 30;
+
+                playerStrength = rand () % 15 + 5;
+
+                playerAccuracy = playerAccuracy - playerStrength;
+
+                cout << "\n\n";
+
+                cout << "Strength randomised to: " << playerStrength;
+
+                cout << "\n\n";
+
+                cout << "Accuracy randomised to: " << playerAccuracy;
+
+                cout << "\n\n";
+
+                system ("pause");
+
+                settingStats = false;
+
+                // playerAccuracy = rand () % 5 + 10;
+
+            } else if (playerEntry != "") {
+
+                try {
+
+                playerStrength = stoi (playerEntry);
+
+                }
+                catch (...) {
+
+                    cout << "\n\n";
+
+                    cout << "Not a valid entry.";
+
+                    cout << "\n\n";
+
+                    system ("pause");
+
+                    continue;
+
+                }
+
+                if (playerStrength >= 0 && playerStrength <= 30) {
+
+                    playerAccuracy = playerAccuracy - playerStrength;
+
+                    confirmingStats = true;
+
+                    do {
+
+                        system ("cls");
+
+                        cout << "\n\n";
+
+                        cout << "This will set your Accuracy as " << playerAccuracy << "." ;
+
+                        cout << "\n\n";
+
+                        cout << "Is that ok?";
+
+                        cout << "\n\n";
+
+                        cout << "> ";
+
+                        getline (cin, playerEntry);
+
+                        if (playerEntry == "yes" || playerEntry == "y" || playerEntry == "Yes" || playerEntry == "Y") {
+
+                            system ("cls");
+
+                            cout << "Set.";
+
+                            cout << "\n\n";
+
+                            system ("pause");
+
+                            confirmingStats = false;
+
+                            settingStats = false;
+
+                        } else if (playerEntry == "no" || playerEntry == "n" || playerEntry == "No" || playerEntry == "N") {
+
+                            cout << "\n\n";
+
+                            cout << "Ok.";
+
+                            cout << "\n\n";
+
+                            system ("pause");
+
+                            confirmingStats = false;
+
+                        } else {
+
+                            continue;
+
+                        };
+
+                }
+                while (confirmingStats == true);
+
+                } else {
+
+                    cout << "\n\n";
+
+                    cout << "Not a valid number.";
+
+                    cout << "\n\n";
+
+                    system ("pause");
+
+                    continue;
+
+                };
+
+            } else {
+
+                continue;
+
+            };
+
+        }
+        while (settingStats == true);
+
+
         playerHealth = 100;
-        playerStrength = rand () % 5 + 5;
+        // playerStrength = rand () % 5 + 5;
         playerLuck = rand () % 7;
-        playerAccuracy = rand () % 5 + 10;
+        // playerAccuracy = rand () % 5 + 10;
 
 
 
