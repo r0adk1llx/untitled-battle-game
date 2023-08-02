@@ -153,7 +153,7 @@ int main () {
     majorVersion = 0;
     shareVersion = 1;
     revisionVersion = 0;
-    minorVersion = 0;
+    minorVersion = 2;
 
     // seed the rng
 
@@ -698,6 +698,61 @@ int main () {
 
             system ("pause");
 
+            do {
+
+                system ("cls");
+
+                system ("color 07");
+
+                cout << "Proceed or check your Inventory.";
+
+                cout << "\n\n";
+
+                cout << "> ";
+
+                getline (cin, playerEntry);
+
+                if (playerEntry == "proceed" || playerEntry == "go" || playerEntry == "1" || playerEntry == "enter" || playerEntry == "Proceed" || playerEntry == "door 1" || playerEntry == "Go" || playerEntry == "Enter" || playerEntry == "Door 1" || playerEntry == "enter room" || playerEntry == "Enter room" || playerEntry == "door1" || playerEntry == "Enter door" || playerEntry == "enter door" || playerEntry == "Door1") {
+
+                roomChoice = false;
+
+                } else if (playerEntry == "inventory" || playerEntry == "Inventory" || playerEntry == "inv" || playerEntry == "Inv" || playerEntry == "i" || playerEntry == "I") {
+
+                    do {
+
+                        system ("cls");
+
+                        cout << "[INVENTORY]";
+
+                        cout << "\n\n------------\n\n";
+
+                        cout << "This is where you would put stuff, if items were implemented";
+
+                        cout << "\n\n\n\n\n\n------------\n\n";
+
+                        cout << "You would be able to enter an item here but due to the inventory not being implemented,";
+
+                        cout << "\n\n";
+
+                        system ("pause");
+
+                        checkingInventory = false;
+                    }
+                    while (checkingInventory == true);
+
+                } else {
+
+                    continue;
+
+                };
+
+            }
+            while (roomChoice != false);
+
+            // cout << "\n\n";
+
+            // system ("pause");
+
             roomChoice = false;
 
         } else if (roomSplit > 1) {
@@ -710,7 +765,7 @@ int main () {
 
                 system ("color 07");
 
-                cout << "Choose a door to go through or check your inventory";
+                cout << "Choose a door to go through or check your Inventory.";
 
                 cout << "\n\n";
 
@@ -718,7 +773,7 @@ int main () {
 
                 getline (cin, playerEntry);
 
-                if (playerEntry == "3" || playerEntry == "2" || playerEntry == "1") {
+                if (playerEntry == "3" || playerEntry == "2" || playerEntry == "1" || playerEntry == "door 3" || playerEntry == "door 2" || playerEntry == "door 1" || playerEntry == "Door 3" || playerEntry == "Door 2" || playerEntry == "Door 1" || playerEntry == "door3" || playerEntry == "door2" || playerEntry == "door1" || playerEntry == "Door3" || playerEntry == "Door2" || playerEntry == "Door1") {
 
                 roomChoice = false;
 
@@ -879,9 +934,9 @@ int main () {
                 enemyArticle = "the";
                 capitalArticle = "The";
                 enemyAttackText = "bites";
-                enemyHealth = 35 + (playerStrength / 3);
-                enemyStrength = 15;
-                enemyAccuracy = 25;
+                enemyHealth = 40 + (playerStrength / 3);
+                enemyStrength = 20;
+                enemyAccuracy = 20;
                 enemyCashWorth = 10;
                 enemyCashMin = 15;
                 enemyTakesAdvantage = true;
@@ -895,8 +950,8 @@ int main () {
                 capitalArticle = "The";
                 enemyAttackText = "pinches";
                 enemyHealth = 25 + (playerStrength / 3);
-                enemyStrength = 10;
-                enemyAccuracy = 20;
+                enemyStrength = 15;
+                enemyAccuracy = 15;
                 enemyCashWorth = 9;
                 enemyCashMin = 1;
                 enemyTakesAdvantage = true;
@@ -910,7 +965,7 @@ int main () {
                 capitalArticle = "The";
                 enemyAttackText = "hits";
                 enemyHealth = 15 + (playerStrength / 3);
-                enemyStrength = 10;
+                enemyStrength = 5;
                 enemyAccuracy = 25;
                 enemyCashWorth = 10;
                 enemyCashMin = 5;
@@ -925,8 +980,8 @@ int main () {
                 capitalArticle = "The";
                 enemyAttackText = "swings its sword at";
                 enemyHealth = 30 + (playerStrength / 2);
-                enemyStrength = 25;
-                enemyAccuracy = 5;
+                enemyStrength = 30;
+                enemyAccuracy = 3;
                 enemyCashWorth = 5;
                 enemyCashMin = 15;
                 enemyTakesAdvantage = true;
@@ -941,7 +996,7 @@ int main () {
                 enemyAttackText = "stabs";
                 enemyHealth = 5 + playerStrength;
                 enemyStrength = 10;
-                enemyAccuracy = 25;
+                enemyAccuracy = 20;
                 enemyCashWorth = 19;
                 enemyCashMin = 1;
                 enemyTakesAdvantage = true;
@@ -1016,7 +1071,9 @@ int main () {
 
             do {
 
+                cout << "\n\n---------\n\n";
 
+                cout << "Your Health: " << playerHealth;
 
                 cout << "\n\n---------\n\n";
 
