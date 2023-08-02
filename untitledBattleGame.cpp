@@ -8,9 +8,17 @@ using namespace std;
 
 // start variables here
 
+// menu flags
+
+bool startMenu;
+
 // submenu flags
 
 bool isAbout;
+
+// settings
+
+bool allowFlash = false; // toggles colour flash for certain occurances, off by default
 
 // entry
 
@@ -35,6 +43,11 @@ int playerLuck; // increases or decreases various stats and chances
 int playerAccuracy; // adds to the attack hit chance roll
 int playerCash; // shall not be referred to as cash in game. because its really not. credits maybe. currency possibly. cash, no.
 int playerStasisCash; // allows less errors when calculating current credit amount
+int totalPlayerCash;
+
+// player states
+
+bool isBlocking;
 
 // vague check of stats
 
@@ -58,6 +71,7 @@ int enemyCashWorth; // both cash worth and min should equal to the max. ie. if m
 int enemyCashMin; // check line before
 bool enemyIntimidation; // allows enemies to have opening moves/first attacks
 bool enemyTakesAdvantage; // usually true, but can be false. used mostly for Crit Fails
+string enemyAttackText;
 
 // random number catch
 
@@ -69,17 +83,39 @@ int enemyAttRoll; // enemy attack
 int playerDodgeRoll;
 int LuckRoll;
 int playerCritFail;
+int enemyCritFail; // honestly not really necessary, just here cause im mirroring the code, maybe use for self destruct type moves?
 int playerOuch;
-
-int roomTypeNum;
+int playerAdvantage;
+int playerDefend;
 
 int cashEarned;
+
+// inventory
+
+bool checkingInventory;
+string heldItems;
+
+
+// room and floor generation
+
+int roomCount; // sets how many rooms a floor has
+int roomsPassed;
+int roomSplit; // sets how many rooms at a split
+int floorCount; // chooses how many floors to beat
+bool isBossRoom; // can set last room as boss room
+bool roomChoice;
+
+bool freshOffElevator;
+
+int roomTypeNum;
 
 // Random Text Cycle
 
 int randTextNum;
 
 string playerBigHit;
+string enemySmashHit;
+string gameOverBlurb;
 
 // floor data
 
@@ -90,8 +126,9 @@ bool battleLoop = false;
 // track game stats
 
 int turnsPassed; // for setting up turn based moves
-int roomsPassed;
+int totalRoomsPassed;
 int enemiesDead;
+int currentFloor;
 
 // release variables
 
@@ -103,12 +140,16 @@ int minorVersion = 0;
 
 int main () {
 
+    system ("color 08");
+
     enableDesbug = false;
+
+    startMenu = true;
 
     releaseState = "alpha";
     majorVersion = 0;
-    shareVersion = 0;
-    revisionVersion = 1;
+    shareVersion = 1;
+    revisionVersion = 0;
     minorVersion = 0;
 
     // seed the rng
@@ -119,9 +160,15 @@ int main () {
 
     startPage:
 
+    do {
+
     system ("cls");
 
     cout << "Version " << releaseState << " " << majorVersion << "." << shareVersion << "." << revisionVersion << "." << minorVersion ; //ver number is major.share release.revision.minor
+
+    cout << "\n\n";
+
+    cout << "Warning: There is some minor flashing that can be enabled in this game. [Currently set to on for testing reasons]";
 
     if (enableDesbug = true) {
 
@@ -162,7 +209,9 @@ int main () {
 
             system ("pause");
 
-            goto startPage;
+            continue;
+
+            // goto startPage;
 
         } else if (enableDesbug = true) {
 
@@ -176,7 +225,9 @@ int main () {
 
             system ("pause");
 
-            goto startPage;
+            continue;
+
+            // goto startPage;
 
         } else {
 
@@ -184,9 +235,7 @@ int main () {
 
         };
 
-    };
-
-    if (playerEntry == "about" || playerEntry == "About") {
+    } else if (playerEntry == "about" || playerEntry == "About") {
 
         // about menu
 
@@ -201,14 +250,15 @@ int main () {
             system ("pause");
 
             isAbout = false;
-            goto startPage;
+
+            continue;
+
+            // goto startPage;
 
         }
         while (isAbout == true);
 
-    };
-
-    if (playerEntry == "secretnyan") {
+    } else if (playerEntry == "secretnyan") {
 
         if (secretsEnabled == false) {
 
@@ -224,18 +274,82 @@ int main () {
         };
 
         system ("pause");
-        goto startPage;
+
+        continue;
+
+        // goto startPage;
 
 
-    };
+    } else if (playerEntry == "toggleFlashing" || playerEntry == "toggleFlash" || playerEntry == "toggleflash" || playerEntry == "toggleflashing" || playerEntry == "Flash" || playerEntry == "flash" || playerEntry == "Flashing" || playerEntry == "flashing" || playerEntry == "clap on" || playerEntry == "clap off" || playerEntry == "clapon" || playerEntry == "clapoff") {
 
-    if (playerEntry == "exit" || playerEntry == "Exit" || playerEntry == "quit" || playerEntry == "Quit" || playerEntry == "q" || playerEntry == "Q" || playerEntry == "e" || playerEntry == "E") {
+        if (allowFlash = true) {
+
+            allowFlash = false;
+
+            cout << "\n\n";
+
+            cout << "Flash effects are disabled. [not so flashy now, huh?]";
+
+            cout << "\n\n";
+
+            system ("pause");
+
+            continue;
+
+            // goto startPage;
+
+        } else if (allowFlash = false) {
+
+            allowFlash = true;
+
+            cout << "\n\n";
+
+            cout << "Flash effects are enabled. [blink, blink]";
+
+            cout << "\n\n";
+
+            system ("pause");
+
+            continue;
+
+            // goto startPage;
+
+        } else {
+
+            allowFlash = true;
+
+            cout << "\n\n";
+
+            cout << "Flash effects are enabled. [blink, blink]";
+
+            cout << "\n\n";
+
+            system ("pause");
+
+            continue;
+
+            // goto startPage;
+
+        };
+
+    } else if (playerEntry == "exit" || playerEntry == "Exit" || playerEntry == "quit" || playerEntry == "Quit" || playerEntry == "q" || playerEntry == "Q" || playerEntry == "e" || playerEntry == "E") {
 
         // exit function, reuse and update for necessary functions like saving
 
         goto controlQuit;
 
+    } else {
+
+        startMenu = false;
+
+        // continue;
+
+        // goto startPage;
+
     };
+
+    }
+    while (startMenu == true);
 
     // game loop
 
@@ -243,10 +357,17 @@ int main () {
 
         system ("cls");
 
+        totalRoomsPassed = 0;
+        enemiesDead = 0;
+        totalPlayerCash = 0;
+
+        enemyName = "Void";
+
         playerHealth = 100;
         playerStrength = rand () % 5 + 5;
         playerLuck = rand () % 7;
         playerAccuracy = rand () % 5 + 10;
+
 
 
 
@@ -258,17 +379,19 @@ int main () {
 
 
 
+
+
         // health ob
 
         if (playerHealth >= 75) {
 
             obPlayerHealth = "Healthy";
 
-        } else if (playerHealth >= 50 != playerHealth >= 75) {
+        } else if (playerHealth >= 50 && playerHealth <= 74) {
 
             obPlayerHealth = "Injured";
 
-        } else if (playerHealth >=25 != playerHealth >= 50) {
+        } else if (playerHealth >= 25 && playerHealth <= 49) {
 
             obPlayerHealth = "Wounded";
 
@@ -288,15 +411,15 @@ int main () {
 
             obPlayerStrength = "Really Strong";
 
-        } else if (playerStrength >= 20 != playerStrength >=30) {
+        } else if (playerStrength >= 20 && playerStrength <= 29) {
 
             obPlayerStrength = "Pretty Strong";
 
-        } else if (playerStrength >=10 != playerStrength >=20) {
+        } else if (playerStrength >= 10 && playerStrength <= 19) {
 
             obPlayerStrength = "Kinda Strong";
 
-        } else if (playerStrength <= 10 != playerStrength > 10) {
+        } else if (playerStrength <= 10 && playerStrength >= 4) {
 
             obPlayerStrength = "Relatively Strong";
 
@@ -316,15 +439,15 @@ int main () {
 
             obPlayerAccuracy = "Like a Sharpshooter";
 
-        } else if (playerAccuracy >= 20 != playerAccuracy >=30) {
+        } else if (playerAccuracy >= 20 && playerAccuracy <= 29) {
 
             obPlayerAccuracy = "Really Accurate";
 
-        } else if (playerAccuracy >=10 != playerAccuracy >=20) {
+        } else if (playerAccuracy >=10 && playerAccuracy <= 19) {
 
             obPlayerAccuracy = "Pretty Accurate";
 
-        } else if (playerAccuracy <= 10 != playerAccuracy > 10) {
+        } else if (playerAccuracy <= 10 && playerAccuracy >= 4) {
 
             obPlayerAccuracy = "sure you could hit something if you tried";
 
@@ -338,9 +461,160 @@ int main () {
 
         };
 
+    genFloor:
+
+        roomCount = rand () % 9 + 1;
+
+        cout << "Once in the elevator, you see that you are going to floor " << currentFloor << " which has " << roomCount << " rooms.";
+
+        cout << "\n\n";
+
+        freshOffElevator = true;
+
     genRoom:
 
+        roomChoice = true;
+
+        roomSplit = rand () % 2 + 1;
+
         system ("cls");
+
+        system ("color 08");
+
+        // first, prompt user for road split choice (honestly this is just me adding more chance)
+
+        if (freshOffElevator == true) {
+
+            cout << "Upon getting out of the elevator, you walk into a hallway and see ";
+
+            if (roomSplit == 1) {
+
+                cout << "a single door ";
+
+            } else {
+
+                cout << roomSplit << " doors ";
+
+            };
+
+          cout << "in front of you.";
+
+          cout << "\n\n";
+
+          freshOffElevator = false;
+
+        } else if (freshOffElevator == false) {
+
+            cout << "Upon leaving that room, you spot ";
+
+            if (roomSplit == 1) {
+
+                cout << "a single door ";
+
+            } else {
+
+                cout << roomSplit << " doors ";
+
+            };
+
+          cout << "ahead of you.";
+
+          cout << "\n\n";
+
+        } else {
+
+            cout << "Upon leaving that room, you spot ";
+
+            if (roomSplit == 1) {
+
+                cout << "a single door ";
+
+            } else {
+
+                cout << roomSplit << " doors ";
+
+            };
+
+          cout << "ahead of you.";
+
+          cout << "\n\n";
+
+        }
+
+        if (roomSplit == 1) {
+
+            cout << "Since there's only one door, you have no other choice but to go through it.";
+
+            cout << "\n\n";
+
+            system ("pause");
+
+            roomChoice = false;
+
+        } else if (roomSplit > 1) {
+
+            system ("pause");
+
+            do {
+
+                system ("cls");
+
+                system ("color 07");
+
+                cout << "Choose a door to go through or check your inventory";
+
+                cout << "\n\n";
+
+                cout << "> ";
+
+                getline (cin, playerEntry);
+
+                if (playerEntry == "3" || playerEntry == "2" || playerEntry == "1") {
+
+                roomChoice = false;
+
+                } else if (playerEntry == "inventory" || playerEntry == "Inventory" || playerEntry == "inv" || playerEntry == "Inv" || playerEntry == "i" || playerEntry == "I") {
+
+                    do {
+
+                        system ("cls");
+
+                        cout << "[INVENTORY]";
+
+                        cout << "\n\n------------\n\n";
+
+                        cout << "This is where you would put stuff, if items were implemented";
+
+                        cout << "\n\n\n\n\n\n------------\n\n";
+
+                        cout << "You would be able to enter an item here but due to the inventory not being implemented,";
+
+                        cout << "\n\n";
+
+                        system ("pause");
+
+                        checkingInventory = false;
+                    }
+                    while (checkingInventory == true);
+
+                } else {
+
+                    continue;
+
+                };
+
+            }
+            while (roomChoice != false);
+
+        };
+
+        // then allow inventory management
+
+        // then finally show entrance status and enter room
+
+        system ("cls");
+
+        system ("color 08");
 
         roomTypeNum = rand () % 10;
 
@@ -409,6 +683,8 @@ int main () {
 
         system ("cls");
 
+        system ("color 02");
+
         do {
 
         cout << "[SHOP]";
@@ -430,30 +706,126 @@ int main () {
         }
         while (isShopping == true);
 
+        roomsPassed = roomsPassed + 1;
+
+        totalRoomsPassed = totalRoomsPassed + 1;
+
         goto genRoom;
 
     battleRoom:
 
         system ("cls");
 
+        system ("color 06");
+
         do {
 
             randTextNum = rand () % 19 + 1;
 
-            enemyType = rand () % 10;
+            enemyType = rand () % 6 + 1;
 
-            if (enemyType >= 5) {
+            if (enemyType == 1) {
+
+                enemyName = "Spider";
+                enemyArticle = "the";
+                capitalArticle = "The";
+                enemyAttackText = "bites";
+                enemyHealth = 35 + (playerStrength / 3);
+                enemyStrength = 15;
+                enemyAccuracy = 25;
+                enemyCashWorth = 10;
+                enemyCashMin = 15;
+                enemyTakesAdvantage = true;
+
+                battleLoop = true;
+
+            } else if (enemyType == 2) {
+
+                enemyName = "Crab";
+                enemyArticle = "the";
+                capitalArticle = "The";
+                enemyAttackText = "pinches";
+                enemyHealth = 25 + (playerStrength / 3);
+                enemyStrength = 10;
+                enemyAccuracy = 20;
+                enemyCashWorth = 9;
+                enemyCashMin = 1;
+                enemyTakesAdvantage = true;
+
+                battleLoop = true;
+
+            } else if (enemyType == 3) {
+
+                enemyName = "Shadow";
+                enemyArticle = "the";
+                capitalArticle = "The";
+                enemyAttackText = "hits";
+                enemyHealth = 15 + (playerStrength / 3);
+                enemyStrength = 10;
+                enemyAccuracy = 25;
+                enemyCashWorth = 10;
+                enemyCashMin = 5;
+                enemyTakesAdvantage = true;
+
+                battleLoop = true;
+
+            } else if (enemyType == 4) {
+
+                enemyName = "Possessed Armour";
+                enemyArticle = "the";
+                capitalArticle = "The";
+                enemyAttackText = "swings its sword at";
+                enemyHealth = 30 + (playerStrength / 2);
+                enemyStrength = 25;
+                enemyAccuracy = 5;
+                enemyCashWorth = 5;
+                enemyCashMin = 15;
+                enemyTakesAdvantage = true;
+
+                battleLoop = true;
+
+            } else if (enemyType == 5) {
 
                 enemyName = "Test Dummy";
                 enemyArticle = "the";
                 capitalArticle = "The";
-                enemyHealth = 25 + (playerStrength / 3);
-                enemyStrength = 5;
-                enemyAccuracy = 10;
-                enemyCashWorth = 9;
+                enemyAttackText = "stabs";
+                enemyHealth = 5 + playerStrength;
+                enemyStrength = 10;
+                enemyAccuracy = 25;
+                enemyCashWorth = 19;
                 enemyCashMin = 1;
+                enemyTakesAdvantage = true;
 
                 battleLoop = true;
+
+            } else if (enemyType == 7) {
+
+                cout << "You wander into the room expecting a fight but find it empty. ";
+
+                if (playerHealth >= 50) {
+
+                    cout << "\n\n";
+
+                    cout << "Oh, well.";
+
+                    cout << "\n\n";
+
+                };
+
+                if (playerHealth <= 49) {
+
+                    cout << "\n\n";
+
+                    cout << "*sigh*";
+
+                    cout << "\n\n";
+
+                };
+
+                battleLoop = false;
+
+                system ("pause");
 
             } else {
 
@@ -478,6 +850,8 @@ int main () {
                     cout << "\n\n";
 
                 };
+
+                battleLoop = false;
 
                 system ("pause");
 
@@ -523,6 +897,27 @@ int main () {
 
                   };
 
+                if (playerActRoll >= 20) {
+
+                    playerActRoll = 20;
+
+                };
+
+                if (playerActRoll < 10) { // re-rolls once to improve hit chance
+
+                    if (playerAccuracy > 10) {
+
+                        playerActRoll = rand () % 20 + (playerAccuracy / 2);
+
+                    } else {
+
+                        playerActRoll = rand () % 20 - (playerAccuracy / 2);
+
+                    };
+
+                };
+
+
                   if (playerActRoll >= 10 && playerActRoll != 20) {
 
                     if (playerStrength > 10) {
@@ -567,7 +962,13 @@ int main () {
 
                         cout << "\n\n";
 
-                        cout << "[" << playerBigHit << "]\n\n" << "You hit " << enemyArticle << " " << enemyName << " for " << playerAttRoll << ".";
+                        system ("color a0");
+
+                        cout << "[" << playerBigHit << "]\n\n";
+
+                        system ("color 06");
+
+                        cout << "You hit " << enemyArticle << " " << enemyName << " for " << playerAttRoll << ".";
 
                         enemyHealth = enemyHealth - playerAttRoll;
 
@@ -589,7 +990,11 @@ int main () {
 
                             playerOuch = rand () % 10 + 15;
 
+                            system ("color 60");
+
                             cout << "In your attempt to hit " << enemyArticle << " " << enemyName << ", you tripped and took " << playerOuch << " damage.";
+
+                            system ("color 06");
 
                             playerHealth = playerHealth - playerOuch;
 
@@ -609,6 +1014,12 @@ int main () {
 
                         enemyHealth = 0;
 
+                        cout << "\n\n";
+
+                        system ("pause");
+
+                        goto enemyKilled;
+
                     };
 
                     cout << "\n\n";
@@ -617,17 +1028,376 @@ int main () {
 
                     cout << "\n\n";
 
+                  } else if (playerEntry == "2" || playerEntry == "Block" || playerEntry == "block" || playerEntry == "b" || playerEntry == "B") {
+
+                    playerBlockRoll = rand () % 21 + playerLuck;
+
+                    playerDefend = playerBlockRoll / 2;
+
+                    cout << "\n\n";
+
+                    cout << "You Blocked.";
+
+                    cout << "\n\n";
+
+                    isBlocking = true;
+
+                  } else if (playerEntry == "giveup" || playerEntry == "surrender" || playerEntry == "no" || playerEntry == "run away") {
+
+                    if (enableDesbug == true) {
+
+                        cout << "\n\n";
+
+                        cout << "Upon giving up, you are smote by the unknown forces of the tower.";
+
+                        cout << "\n\n";
+
+                        system ("color 0c");
+
+                        playerHealth = 0;
+
+                        system ("pause");
+
+                        capitalArticle = "Your";
+
+                        enemyName = "cowardice";
+
+                        goto playerSlain;
+
+                    } else {
+
+                        cout << "\n\n";
+
+                        randTextNum = rand () % 2;
+
+                        if (randTextNum == 0) {
+
+                            cout << "\n\n";
+
+                            cout << "You hear someone whisper in your head, \"Cowardice will not be tolerated.\" You decide to continue fighting.";
+
+                            cout << "\n\n";
+
+                        } else {
+
+                            cout << "\n\n";
+
+                            cout << "Please don\'t do that....";
+
+                            cout << "\n\n";
+
+                        };
+
+                    };
+
+                        cout << "\n\n";
+
+                  } else {
+
+                    system ("cls");
+
+                    cout << "The " << enemyName << " is standing there, menacingly.";
+
+                    continue;
+
                   };
 
-                  system ("pause");
+                  // system ("pause");
 
-                  // enemy attack goes below here
+                // enemy attack goes below here
+
+                /*
+
+                // int enemyHealth; // self explanatory
+                // int enemyStrength; // see above
+                // int enemyAccuracy; // see two above
+                // int enemyCashWorth; // both cash worth and min should equal to the max. ie. if max is 10 and min is 3 then worth is 7
+                // int enemyCashMin; // check line before
+                // bool enemyIntimidation; // allows enemies to have opening moves/first attacks
+                // bool enemyTakesAdvantage; // usually true, but can be false. used mostly for Crit Fails
+
+                int playerAttRoll; // player attack
+                int playerActRoll; // player action (why these are in two different orders is honestly beyond me)
+                int playerBlockRoll;
+                int enemyActRoll; // enemy action
+                int enemyAttRoll; // enemy attack
+                int playerDodgeRoll;
+                int LuckRoll;
+                int playerCritFail;
+                int playerOuch;
+
+                */
+
+                if (enemyAccuracy > 10) {
+
+                    enemyActRoll = rand () % 20 + (enemyAccuracy / 2);
+
+                  } else {
+
+                    enemyActRoll = rand () % 20 - (enemyAccuracy / 2);
+
+                  };
+
+                if (enemyActRoll >= 20) {
+
+                    enemyActRoll = 20;
+
+                };
+
+                if (enemyActRoll < 10) { // re-rolls once to improve hit chance
+
+                    if (enemyAccuracy > 10) {
+
+                        enemyActRoll = rand () % 20 + (enemyAccuracy / 2);
+
+                    } else {
+
+                        enemyActRoll = rand () % 20 - (enemyAccuracy / 2);
+
+                    };
+
+                };
+
+                  if (enemyActRoll >= 10 && enemyActRoll != 20) {
+
+                    if (enemyStrength > 10) {
+
+                        enemyAttRoll = rand () % 20 + (enemyStrength / 2);
+
+                    } else {
+
+                        enemyAttRoll = rand () % 20 - (enemyStrength / 2);
+
+                    };
+
+                    if (enemyAttRoll < (enemyStrength / 4)) {
+
+                        enemyAttRoll = enemyStrength / 4;
+
+                    };
+
+                cout << "\n\n";
+
+                cout << capitalArticle << " " << enemyName << " " << enemyAttackText << " you for " << enemyAttRoll << ".";
+
+                playerHealth = playerHealth - enemyAttRoll;
+
+                } else if (enemyActRoll == 20) {
+
+                        enemyAttRoll = (rand () % 15 + 5) + enemyStrength;
+
+                        if (isBlocking == true) {
+
+                          enemyAttRoll = enemyAttRoll - (enemyAttRoll / 3);
+
+                          isBlocking = false;
+
+                        };
+
+                        if (randTextNum = 1) {
+
+                            enemySmashHit = "Ouch.";
+
+                        } else if (randTextNum == 20){
+
+                            enemySmashHit = "Critical Hit!";
+
+                        }  else {
+
+                            enemySmashHit = "That\'ll bruise.";
+
+                        };
+
+                        cout << "\n\n";
+
+                        system ("color 60");
+
+                        cout << "[" << enemySmashHit << "]\n\n";
+
+                        system ("color 06");
+
+                        cout << capitalArticle << " " << enemyName << " hit you for " << enemyAttRoll << ".";
+
+                        playerHealth = playerHealth - enemyAttRoll;
+
+                    } else if (playerActRoll < 10 && playerActRoll != 1) {
+
+                        cout << "\n\n";
+
+                        cout << capitalArticle << " " << enemyName << " missed.";
+
+                    } else if (playerActRoll == 1) {
+
+                        enemyCritFail = rand () % 100;
+
+                        // if it lands on 4, 18, 47, 58, or 83 then it will trigger crit fail
+
+                        // if (playerCritFail = 47 || playerCritFail = 83 || playerCritFail = 18 || playerCritFail = 4 || playerCritFail = 58) (for historical reasons)
+
+                        if (enemyCritFail == 4 || enemyCritFail == 18 || enemyCritFail == 47 || enemyCritFail == 58 || enemyCritFail == 83) {
+
+                            playerAdvantage = rand () % 10 + 15;
+
+                            cout << "\n\n";
+
+                            system ("color a0");
+
+                            cout << "As " << capitalArticle << " " << enemyName << " misses its attack, you hit it for " << playerAdvantage << " damage.";
+
+                            system ("color 06");
+
+                            enemyHealth = enemyHealth - playerAdvantage;
+
+                        } else {
+
+                            cout << "\n\n";
+
+                            cout << capitalArticle << " "  << enemyName << " missed.";
+
+                        };
+
+                    } else {
+
+                        cout << "\n\n";
+
+                        cout << capitalArticle << " "  << enemyName << " missed.";
+
+                    };
+
+                    cout << "\n\n";
+
+                    if (playerHealth <= 0) {
+
+                        playerHealth = 0;
+
+                        system ("color 0c");
+
+                    };
+
+                    system ("pause");
+
+            playerSlain:
+
+                if (playerHealth <= 0) {
+
+                    system ("cls");
+
+                    // if (allowFlash == true) {
+
+                        system ("color 40");
+
+                    // };
+
+                    cout << "[GAME OVER]";
+
+                    system ("color 04");
+
+                    cout << "\n\n\n\n  ------------\n\n";
+
+                    randTextNum = rand () % 7;
+
+                    if (randTextNum == 0) {
+
+                        cout << "How Unfortunate.";
+
+                    } else if (randTextNum == 1) {
+
+                        cout << "     no.";
+
+                    } else if (randTextNum == 2) {
+
+                        cout << "\"And thus your adventure ends here.\"";
+
+                    } else if (randTextNum == 3) {
+
+                        cout << "You Were Slain.";
+
+                    } else if (randTextNum == 4) {
+
+                        cout << "   You Died";
+
+                    } else if (randTextNum == 5) {
+
+                        cout << "What it says on the tin.";
+
+                    } else if (randTextNum == 6) {
+
+                        cout << "Good Night";
+
+
+                    } else {
+
+                        cout << "Oh.";
+
+                    };
+
+                    cout << "\n\n  ------------\n\n\n\n";
+
+                    cout << capitalArticle << " " << enemyName << " killed you.";
+
+                    cout << "\n\n\n\n\n\n";
+
+                    cout << "You passed " << totalRoomsPassed << " rooms, killed " << enemiesDead << " enemies , and earned " << totalPlayerCash << " total credits." ;
+
+                    cout << "\n\n";
+
+                    system ("pause");
+
+                    gameOverScreen:
+
+                        system ("cls");
+
+                        system ("color 04");
+
+                        cout << "[GAME OVER]";
+
+                        cout << "\n\n";
+
+                        cout << "Would you like to: ";
+
+                        cout << "\n\n";
+
+                        cout << "Restart";
+
+                        cout << "\n";
+
+                        cout << "Quit";
+
+                        cout << "\n\n";
+
+                        cout << "> ";
+
+                        getline (cin, playerEntry);
+
+                        if (playerEntry == "restart" || playerEntry == "Restart" || playerEntry == "r" || playerEntry == "R") {
+
+                            goto initializeGame;
+
+                        } else if (playerEntry == "quit" || playerEntry == "Quit" || playerEntry == "q" || playerEntry == "Q" || playerEntry == "exit" || playerEntry == "Exit" || playerEntry == "e" || playerEntry == "E") {
+
+                            goto controlQuit;
+
+                        } else {
+
+                            goto gameOverScreen;
+
+                        };
+
+                };
+
 
                 // };
 
             // cout << "\n\n";
 
                 // enemyHealth = 0;
+
+                enemyKilled:
+
+                if (enemyHealth <= 0) {
+
+                        enemyHealth = 0;
+                };
 
                 if (enemyHealth <= 0) {
 
@@ -637,6 +1407,8 @@ int main () {
 
                     cout << enemyName << " Defeated.";
 
+                    enemiesDead = enemiesDead + 1;
+
                     cout << "\n\n";
 
                     cashEarned = rand () % enemyCashWorth + enemyCashMin;
@@ -644,6 +1416,8 @@ int main () {
                     playerStasisCash = playerCash;
 
                     playerCash = playerStasisCash + cashEarned;
+
+                    totalPlayerCash = totalPlayerCash + cashEarned;
 
                     cout << cashEarned << " currency earned.";
 
@@ -689,6 +1463,10 @@ int main () {
 
         }
         while (isBattling == true);
+
+        roomsPassed = roomsPassed + 1;
+
+        totalRoomsPassed = totalRoomsPassed + 1;
 
         goto genRoom;
 
