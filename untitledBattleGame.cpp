@@ -32,7 +32,7 @@ bool secretsEnabled = false;
 
 // debug
 
-bool enableDesbug = false;
+bool tossFreshBang = false;
 bool setFirstTime = false;
 
 // player stats
@@ -75,6 +75,7 @@ int enemyCashMin; // check line before
 bool enemyIntimidation; // allows enemies to have opening moves/first attacks
 bool enemyTakesAdvantage; // usually true, but can be false. used mostly for Crit Fails
 string enemyAttackText;
+int enemyFloorBoost;
 
 // random number catch
 
@@ -130,6 +131,8 @@ bool freshOffElevator;
 
 int roomTypeNum;
 
+bool hasReachedTop = false;
+
 // Random Text Cycle
 
 int randTextNum;
@@ -163,15 +166,15 @@ int main () {
 
     system ("color 08");
 
-    enableDesbug = false;
+    tossFreshBang = false;
 
     startMenu = true;
 
     releaseState = "alpha";
     majorVersion = 0;
     shareVersion = 1;
-    revisionVersion = 0;
-    minorVersion = 3;
+    revisionVersion = 1;
+    minorVersion = 0;
 
     // seed the rng
 
@@ -191,70 +194,103 @@ int main () {
 
     cout << "Warning: There is some minor flashing that can be enabled in this game. [Currently set to on for testing reasons]";
 
-    if (enableDesbug = true) {
+    if (tossFreshBang == true) {
 
         cout << "\n\n";
 
-        cout << "[DEBUG]";
+        cout << "[TOSS]";
 
     };
+
+//cout << "\n\n";
+//
+//cout << "tossFreshBang is " << setDesbug;
+
+// cout << "\n\n";
 
     if (secretsEnabled == true) {
 
         cout << "\n\n";
 
-        cout << "Press Enter to Start, or type something like \"about\".\n> ";
+        cout << "Press Enter to Start, or type something like \"about\".\n\n> ";
 
     } else {
 
         cout << "\n\n";
 
-        cout << "Press Enter to Start, or type \"about\".\n> ";
+        cout << "Press Enter to Start, or type \"about\".\n\n> ";
 
     };
+
     getline (cin, playerEntry);
 
     if (playerEntry == "debug" || playerEntry == "Debug") {
 
-        // bool enableDesbug;
+        if (tossFreshBang == false) {
 
-        setFirstTime = true;
+            tossFreshBang = true;
 
-        if (setFirstTime = true) {
+            cout << "\n\n";
 
-            cout << "[DEBUG ENABLED]";
-
-            enableDesbug = true;
+            cout << "[TOSS ENABLED]";
 
             cout << "\n\n";
 
             system ("pause");
-
-            continue;
-
-            // goto startPage;
-
-        } else if (enableDesbug = true) {
-
-            cout << "\n\n";
-
-            cout << "[DEBUG DISABLED]";
-
-            enableDesbug = false;
-
-            cout << "\n\n";
-
-            system ("pause");
-
-            continue;
-
-            // goto startPage;
 
         } else {
 
-            setFirstTime = false;
+            tossFreshBang = false;
+
+            cout << "\n\n";
+
+            cout << "[TOSS DISABLED]";
+
+            cout << "\n\n";
+
+            system ("pause");
 
         };
+
+        // bool enableDesbug;
+
+//        setFirstTime = true;
+//
+//        if (setFirstTime = true) {
+//
+//            cout << "[DEBUG ENABLED]";
+//
+//            setDesbug = true;
+//
+//            cout << "\n\n";
+//
+//            system ("pause");
+//
+//            continue;
+//
+//            // goto startPage;
+//
+//        } else if (setDesbug = true) {
+//
+//            cout << "\n\n";
+//
+//            cout << "[DEBUG DISABLED]";
+//
+//            setDesbug = false;
+//
+//            cout << "\n\n";
+//
+//            system ("pause");
+//
+//            continue;
+//
+//            // goto startPage;
+//
+//        } else {
+//
+//            setFirstTime = false;
+//
+//        };
 
     } else if (playerEntry == "about" || playerEntry == "About") {
 
@@ -303,7 +339,7 @@ int main () {
 
     } else if (playerEntry == "toggleFlashing" || playerEntry == "toggleFlash" || playerEntry == "toggleflash" || playerEntry == "toggleflashing" || playerEntry == "Flash" || playerEntry == "flash" || playerEntry == "Flashing" || playerEntry == "flashing" || playerEntry == "clap on" || playerEntry == "clap off" || playerEntry == "clapon" || playerEntry == "clapoff") {
 
-        if (allowFlash = true) {
+        if (allowFlash == true) {
 
             allowFlash = false;
 
@@ -319,7 +355,7 @@ int main () {
 
             // goto startPage;
 
-        } else if (allowFlash = false) {
+        } else if (allowFlash == false) {
 
             allowFlash = true;
 
@@ -484,6 +520,8 @@ int main () {
 
                             system ("cls");
 
+                            cout << "\n\n";
+
                             cout << "Set.";
 
                             cout << "\n\n";
@@ -544,14 +582,24 @@ int main () {
         playerLuck = rand () % 7;
         // playerAccuracy = rand () % 5 + 10;
 
+        currentFloor = 0;
+
+        roomCount = 0;
+
+        roomsPassed = 0;
+
+        hasReachedTop = false;
 
 
 
-        if (enableDesbug = true) {
+
+        if (tossFreshBang == true) {
 
             obsfucateStats = false;
 
         };
+
+
 
 
 
@@ -611,11 +659,11 @@ int main () {
 
         // accuracy ob
 
-        if (playerAccuracy >= 30) {
+        if (playerAccuracy >= 25) {
 
-            obPlayerAccuracy = "Like a Sharpshooter";
+            obPlayerAccuracy = "like a Sharpshooter";
 
-        } else if (playerAccuracy >= 20 && playerAccuracy <= 29) {
+        } else if (playerAccuracy >= 20 && playerAccuracy <= 24) {
 
             obPlayerAccuracy = "Really Accurate";
 
@@ -639,7 +687,29 @@ int main () {
 
     genFloor:
 
-        roomCount = rand () % 9 + 1;
+        floorCount = 75;
+
+        if (currentFloor == floorCount) {
+
+            hasReachedTop = true;
+
+            goto gameWinOver;
+
+        } else {
+
+            currentFloor = currentFloor + 1;
+
+        };
+
+        // currentFloor = currentFloor + 1;
+
+        system ("color 09");
+
+        roomCount = rand () % 10 + 5;
+
+        system ("cls");
+
+        cout << "\n\n";
 
         cout << "Once in the elevator, you see that you are going to floor " << currentFloor << " which has " << roomCount << " rooms.";
 
@@ -647,7 +717,21 @@ int main () {
 
         freshOffElevator = true;
 
+        system ("pause");
+
     genRoom:
+
+        if (roomsPassed == roomCount) {
+
+            roomsPassed = 0;
+
+            goto genFloor;
+
+        } else {
+
+            roomsPassed = roomsPassed + 1;
+
+        };
 
         roomChoice = true;
 
@@ -656,6 +740,12 @@ int main () {
         system ("cls");
 
         system ("color 08");
+
+        cout << "\n\n";
+
+        cout << "[ Room " << roomsPassed << " of " << roomCount << " ]" ;
+
+        cout << "\n\n------------\n\n";
 
         // first, prompt user for road split choice (honestly this is just me adding more chance)
 
@@ -745,6 +835,187 @@ int main () {
 
                 } else if (playerEntry == "inventory" || playerEntry == "Inventory" || playerEntry == "inv" || playerEntry == "Inv" || playerEntry == "i" || playerEntry == "I") {
 
+                do {
+
+                        system ("cls");
+
+                        cout << "[INVENTORY]";
+
+                        cout << "\n\n";
+
+                        cout << "You have " << playerCash << " credits.";
+
+                        cout << "\n\n";
+
+                        cout << "Your health is currently at: " << playerHealth;
+
+                        cout << "\n\n------------\n\n";
+
+                        if (rationCount > 0 || funnyPillCount > 0 || hasContactLens == true) {
+
+                            hasInventory = true;
+
+                        } else {
+
+                            hasInventory = false;
+
+                        };
+
+                        if (hasInventory == true) {
+
+                            if (rationCount > 0) {
+
+                                cout << "Rations: " << rationCount;
+
+                                cout << "\n\n";
+
+                            };
+
+                            if (funnyPillCount > 0) {
+
+                                cout << "Pills: " << funnyPillCount;
+
+                                cout << "\n\n";
+
+                            };
+
+                            if (hasContactLens == true) {
+
+                                cout << "Contact Lens";
+
+                                cout << "\n\n";
+
+                            };
+
+                        } else if (hasInventory == false) {
+
+                            cout << "[ You have no items, yet. ]";
+
+                            cout << "\n\n";
+
+                        };
+
+//                        cout << "This is where you would put stuff, if items were implemented";
+
+                        cout << "------------\n\n";
+
+                        // cout << "You would be able to enter an item here but due to the inventory not being implemented entirely,";
+
+
+                        if (hasInventory == true) {
+
+                            usingInventory = true;
+
+                            do {
+
+                                cout << "> ";
+
+                                getline (cin, playerEntry);
+
+                                if (playerEntry == "ration" || playerEntry == "use ration" || playerEntry == "Ration" || playerEntry == "Use ration") {
+
+                                    system ("cls");
+
+                                    if (rationCount > 0) {
+
+                                        healPlayer = rand () % 25 + 25;
+
+                                        randTextNum = rand () % 3;
+
+                                        if (randTextNum == 0) {
+
+                                            rationFlavour = "s\'mores";
+
+                                        } else if (randTextNum == 1) {
+
+                                            rationFlavour = "chicken";
+
+                                        } else if (randTextNum == 2) {
+
+                                            rationFlavour = "baked beans";
+
+                                        } else {
+
+                                            rationFlavour = "nothing, actually";
+
+                                        };
+
+                                        cout << "You ate a ration. It tastes like " << rationFlavour << ".";
+
+                                        cout << "\n\n";
+
+                                        cout << "The ration healed you for " << healPlayer << ".";
+
+                                        cout << "\n\n";
+
+                                        playerHealth = playerHealth + healPlayer;
+
+                                        system ("pause");
+
+                                        continue;
+
+                                } else if (playerEntry == "exit" || playerEntry == "quit" || playerEntry == "Exit"|| playerEntry == "Quit" || playerEntry == "e" || playerEntry == "q" || playerEntry == "E" || playerEntry == "Q" || playerEntry == "leave" || playerEntry == "Leave") {
+
+                                    usingInventory = false;
+
+                                    checkingInventory = false;
+
+                                    system ("cls");
+
+                                    goto exitInventoryZero;
+
+                                    // break;
+
+                                } else {
+
+                                    system ("cls");
+
+                                    // continue;
+
+                                };
+
+                                system ("cls");
+
+                            };
+
+                            }
+                            while (usingInventory == true);
+
+                        } else if (rationCount == 0 || funnyPillCount == 0 || hasContactLens == false) {
+
+                            checkingInventory = false;
+
+//                            goto exitInventoryOne;
+
+                            // break;
+
+                            // continue;
+
+                        } else {
+
+                            checkingInventory = false;
+
+//                            goto exitInventoryOne;
+//
+//                            break;
+//
+                             continue;
+
+                        };
+
+                        cout << "\n\n";
+
+                        exitInventoryZero:
+
+                        checkingInventory = false;
+
+                        system ("pause");
+
+                        // checkingInventory = false;
+                    }
+                    while (checkingInventory == true);
+
+                /*
                     do {
 
                         system ("cls");
@@ -789,7 +1060,7 @@ int main () {
 
                             };
 
-                            if (hasContactLens = true) {
+                            if (hasContactLens == true) {
 
                                 cout << "Contact Lens";
 
@@ -809,11 +1080,11 @@ int main () {
 
                         cout << "------------\n\n";
 
-                        if (hasInventory = true) {
+                        if (hasInventory == true) {
 
                             cout << "> ";
 
-                        } else if (hasInventory = false) {
+                        } else if (hasInventory == false) {
 
                             continue;
 
@@ -830,8 +1101,13 @@ int main () {
                         system ("pause");
 
                         checkingInventory = false;
+
+                        system ("pause");
+
                     }
                     while (checkingInventory == true);
+
+                */
 
                 } else {
 
@@ -916,7 +1192,7 @@ int main () {
 
                             };
 
-                            if (hasContactLens = true) {
+                            if (hasContactLens == true) {
 
                                 cout << "Contact Lens";
 
@@ -939,102 +1215,119 @@ int main () {
                         // cout << "You would be able to enter an item here but due to the inventory not being implemented entirely,";
 
 
-//                        if (hasInventory = true) {
-//
-//                            usingInventory = true;
-//
-//                            do {
-//
-//                            cout << "> ";
-//
-//                            getline (cin, playerEntry);
-//
-//                            if (playerEntry == "ration" || playerEntry == "use ration" || playerEntry == "Ration" || playerEntry == "Use ration") {
-//
-//                                system ("cls");
-//
-//                                if (rationCount > 0) {
-//
-//                                    healPlayer = rand () % 25 + 25;
-//
-//                                    randTextNum = rand () % 3;
-//
-//                                    if (randTextNum == 0) {
-//
-//                                        rationFlavour = "s\'mores";
-//
-//                                    } else if (randTextNum == 1) {
-//
-//                                        rationFlavour = "chicken";
-//
-//                                    } else if (randTextNum == 2) {
-//
-//                                        rationFlavour = "baked beans";
-//
-//                                    } else {
-//
-//                                        rationFlavour = "nothing, actually";
-//
-//                                    }
-//
-//                                    cout << "You ate a ration. It tastes like " << rationFlavour << ".";
-//
-//                                    cout << "\n\n";
-//
-//                                    cout << "The ration healed you for " << healPlayer << ".";
-//
-//                                    playerHealth = playerHealth + healPlayer;
-//
-//                                    system ("pause");
-//
-//                                    continue;
-//
-//                                } else if (playerEntry == "exit" || playerEntry == "quit" || playerEntry == "Exit"|| playerEntry == "Quit" || playerEntry == "e" || playerEntry == "q" || playerEntry == "E" || playerEntry == "Q" || playerEntry == "leave" || playerEntry == "Leave") {
-//
-//                                    usingInventory = false;
-//
-//                                    checkingInventory = false;
-//
-//                                    system ("cls");
-//
-//                                    goto exitInventoryOne;
-//
-//                                    break;
-//
-//                                } else {
-//
-//                                    system ("cls");
-//
-//                                    continue;
-//
-//                                };
-//
-//                            };
-//
-//                            }
-//                            while (usingInventory == true);
-//
-//                        } else if (rationCount == 0 || funnyPillCount == 0 || hasContactLens == false) {
-//
-//                            checkingInventory = false;
-//
+                        if (hasInventory == true) {
+
+                            usingInventory = true;
+
+                            do {
+
+                                system ("cls");
+
+                                cout << "[INVENTORY]";
+
+                                cout << "\n\n";
+
+                                cout << "You have " << playerCash << " credits.";
+
+                                cout << "\n\n";
+
+                                cout << "Your health is currently at: " << playerHealth;
+
+                                cout << "\n\n------------\n\n";
+
+
+                                cout << "> ";
+
+                                getline (cin, playerEntry);
+
+                                if (playerEntry == "ration" || playerEntry == "use ration" || playerEntry == "Ration" || playerEntry == "Use ration") {
+
+                                    system ("cls");
+
+                                    if (rationCount > 0) {
+
+                                        healPlayer = rand () % 25 + 25;
+
+                                        randTextNum = rand () % 3;
+
+                                        if (randTextNum == 0) {
+
+                                            rationFlavour = "s\'mores";
+
+                                        } else if (randTextNum == 1) {
+
+                                            rationFlavour = "chicken";
+
+                                        } else if (randTextNum == 2) {
+
+                                            rationFlavour = "baked beans";
+
+                                        } else {
+
+                                            rationFlavour = "nothing, actually";
+
+                                        }
+
+                                    cout << "You ate a ration. It tastes like " << rationFlavour << ".";
+
+                                    cout << "\n\n";
+
+                                    cout << "The ration healed you for " << healPlayer << ".";
+
+                                    playerHealth = playerHealth + healPlayer;
+
+                                    system ("pause");
+
+                                    // continue;
+
+                                };
+
+                                if (playerEntry == "exit" || playerEntry == "quit" || playerEntry == "Exit"|| playerEntry == "Quit" || playerEntry == "e" || playerEntry == "q" || playerEntry == "E" || playerEntry == "Q" || playerEntry == "leave" || playerEntry == "Leave") {
+
+                                    usingInventory = false;
+
+                                    checkingInventory = false;
+
+                                    system ("cls");
+
+                                    // goto exitInventoryOne;
+
+                                    // break;
+
+                                } else {
+
+                                    system ("cls");
+
+                                    continue;
+
+                                };
+
+                            };
+
+                            }
+                            while (usingInventory == true);
+
+                        } else if (rationCount == 0 || funnyPillCount == 0 || hasContactLens == false) {
+
+                            checkingInventory = false;
+
+//                            goto exitInventoryOne;
+
+                            // break;
+
+                            // continue;
+
+                        } else {
+
+                            checkingInventory = false;
+
 //                            goto exitInventoryOne;
 //
 //                            break;
 //
-//                            // continue;
-//
-//                        } else {
-//
-//                            checkingInventory = false;
-//
-//                            goto exitInventoryOne;
-//
-//                            break;
-//
-//                            // continue;
-//
-//                        };
+                             continue;
+
+                        };
 
                         cout << "\n\n";
 
@@ -1110,6 +1403,11 @@ int main () {
 
         };
 
+//        cout << "\n\n";
+//
+//        cout << "tossFreshBang is " << setDesbug;
+
+
         cout << "\n\n---------\n\n";
 
         system ("pause");
@@ -1129,6 +1427,38 @@ int main () {
         };
 
     shopRoom:
+
+        rationPrice = 5;
+
+        funnyPillPrice = 10;
+
+        contactLensPrice = 15;
+
+        bargainBin = rand () % 4 + 1;
+
+            if (bargainBin == 1) {
+
+                rationPrice = 2;
+
+                binItem = "Rations";
+
+            } else if (bargainBin == 2) {
+
+                funnyPillPrice = 5;
+
+                binItem = "Strength Pill";
+
+            } else if (bargainBin == 3) {
+
+                contactLensPrice = 10;
+
+                binItem = "Contact Lens";
+
+            } else {
+
+                binItem = "Nothing Right Now";
+
+            };
 
         do {
 
@@ -1154,38 +1484,6 @@ int main () {
 
             // cout << "\n\n";
 
-            rationPrice = 5;
-
-            funnyPillPrice = 10;
-
-            contactLensPrice = 15;
-
-            bargainBin = rand () % 3 + 1;
-
-            if (bargainBin = 1) {
-
-                rationPrice = 2;
-
-                binItem = "Rations";
-
-            } else if (bargainBin = 2) {
-
-                funnyPillPrice = 5;
-
-                binItem = "Funny Pill";
-
-            } else if (bargainBin = 3) {
-
-                contactLensPrice = 10;
-
-                binItem = "Contact Lens";
-
-            } else {
-
-                binItem = "Nothing Right Now";
-
-            };
-
             cout << "\n\n---------\n\n";
 
             cout << "[ITEMS FOR SALE]";
@@ -1196,7 +1494,7 @@ int main () {
 
             cout << "\n\n";
 
-            cout << "Unmarked Pill - " << funnyPillPrice << " credits";
+            cout << "Strength Pill - " << funnyPillPrice << " credits";
 
             cout << "\n\n";
 
@@ -1270,7 +1568,7 @@ int main () {
 
                 };
 
-            } else if (playerEntry == "pill" || playerEntry == "buy pill" || playerEntry == "Pill" || playerEntry == "Buy pill") {
+            } else if (playerEntry == "pill" || playerEntry == "buy pill" || playerEntry == "Pill" || playerEntry == "Buy pill" || playerEntry == "strength pill" || playerEntry == "buy strength pill" || playerEntry == "Strength Pill" || playerEntry == "Buy strength pill") {
 
                 if (playerCash >= funnyPillPrice && funnyPillUses <= 3) {
 
@@ -1429,7 +1727,7 @@ int main () {
         }
         while (isShopping == true);
 
-        roomsPassed = roomsPassed + 1;
+        // roomsPassed = roomsPassed + 1;
 
         totalRoomsPassed = totalRoomsPassed + 1;
 
@@ -1581,6 +1879,18 @@ int main () {
             };
 
             if (battleLoop == true) {
+
+                enemyFloorBoost = currentFloor / 3;
+
+                enemyHealth = enemyHealth + enemyFloorBoost;
+
+                enemyStrength = enemyStrength + enemyFloorBoost;
+
+                enemyAccuracy = enemyAccuracy + enemyFloorBoost;
+
+                enemyCashWorth = enemyCashWorth + enemyFloorBoost;
+
+                enemyCashMin = enemyCashMin + enemyFloorBoost;
 
                 cout << "As you walk in you find: ";
 
@@ -1769,7 +2079,7 @@ int main () {
 
                   } else if (playerEntry == "giveup" || playerEntry == "surrender" || playerEntry == "no" || playerEntry == "run away") {
 
-                    if (enableDesbug == true) {
+                    if (tossFreshBang == true) {
 
                         cout << "\n\n";
 
@@ -2019,7 +2329,7 @@ int main () {
 
                     cout << "\n\n\n\n  ------------\n\n";
 
-                    randTextNum = rand () % 12;
+                    randTextNum = rand () % 14;
 
                     if (randTextNum == 0) {
 
@@ -2067,7 +2377,15 @@ int main () {
 
                     } else if (randTextNum == 11) {
 
-                        cout << "Skill Issue.";
+                        cout << "  Skill Issue.";
+
+                    } else if (randTextNum == 12) {
+
+                        cout << "That was mid, ngl.";
+
+                    } else if (randTextNum == 13) {
+
+                        cout << "\"Some quote about war.\" - War Man";
 
                     } else {
 
@@ -2081,7 +2399,7 @@ int main () {
 
                     cout << "\n\n\n\n\n\n";
 
-                    cout << "You passed " << totalRoomsPassed << " rooms, killed " << enemiesDead << " enemies , and earned " << totalPlayerCash << " total credits." ;
+                    cout << "You passed " << totalRoomsPassed << " rooms, cleared " << currentFloor << " out of " << floorCount << " floors, killed " << enemiesDead << " enemies , and earned " << totalPlayerCash << " total credits." ;
 
                     cout << "\n\n";
 
@@ -2208,11 +2526,103 @@ int main () {
         }
         while (isBattling == true);
 
-        roomsPassed = roomsPassed + 1;
+        // roomsPassed = roomsPassed + 1;
 
         totalRoomsPassed = totalRoomsPassed + 1;
 
         goto genRoom;
+
+    // the win screen, if you somehow win
+
+        gameWinOver:
+
+        if (hasReachedTop == true) {
+
+            system ("cls");
+
+            // if (allowFlash == true) {
+
+            system ("color a0");
+
+            // };
+
+            cout << "[GAME WIN]";
+
+            system ("color 0a");
+
+            cout << "\n\n\n\n  ------------\n\n";
+
+            randTextNum = rand () % 12;
+
+                    if (randTextNum == 0) {
+
+                        cout << "The End.";
+
+                    } else if (randTextNum == 1) {
+
+                        cout << "    neet.";
+
+                    } else if (randTextNum == 2) {
+
+                        cout << "      win.";
+
+                    } else if (randTextNum == 3) {
+
+                        cout << "  Trophy Get!";
+
+                    } else if (randTextNum == 4) {
+
+                        cout << "   oh, cool.";
+
+                    } else if (randTextNum == 5) {
+
+                        cout << "    RAD!";
+
+                    } else if (randTextNum == 6) {
+
+                        cout << "  Finished";
+
+                    } else if (randTextNum == 7) {
+
+                        cout << "Your'e Still Alive?";
+
+                    } else if (randTextNum == 8) {
+
+                        cout << "  Tada.wav";
+
+                    } else if (randTextNum == 9) {
+
+                        cout << "    Good_Job.png";
+
+                    } else if (randTextNum == 10) {
+
+                        cout << " TOTALY RAD";
+
+                    } else if (randTextNum == 11) {
+
+                        cout << "  Go get a lotto ticket.";
+
+                    } else {
+
+                        cout << "Oh.";
+
+                    };
+
+                    cout << "\n\n  ------------\n\n\n\n";
+
+                    cout << "You made it to the top of the tower, against all odds. Maybe you cheated, somehow. Regardless. good job I guess.";
+
+                    cout << "\n\n\n\n\n\n";
+
+                    cout << "You passed " << totalRoomsPassed << " rooms, cleared " << currentFloor << " out of " << floorCount << " floors, killed " << enemiesDead << " enemies , and earned " << totalPlayerCash << " total credits." ;
+
+                    cout << "\n\n";
+
+                    system ("pause");
+
+                    goto gameOverScreen;
+
+        }
 
 
     // exit jump; call this when making exit functions
