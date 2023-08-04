@@ -32,12 +32,14 @@ bool secretsEnabled = false;
 
 // debug
 
-bool tossFreshBang = false;
-bool setFirstTime = false;
+bool tossFreshBang = false; // think of it like tossing internal switches (this is the debug function btw)
+bool setFirstTime = false; // depreciated flag, was for trying to fix debug
 
 // player stats
 
 int playerHealth; // pretty self explanatory
+int playerMaxHealth; // player health cap
+int playerDefence; // decreases damage taken
 int playerStrength; // adds (or subtracts) from attack damage
 int playerLuck; // increases or decreases various stats and chances
 int playerAccuracy; // adds to the attack hit chance roll
@@ -45,16 +47,16 @@ int playerCash; // shall not be referred to as cash in game. because its really 
 int playerStasisCash; // allows less errors when calculating current credit amount
 int totalPlayerCash;
 
-bool settingStats;
-bool confirmingStats;
+bool settingStats; // allows cycling the stat setting screen
+bool confirmingStats; // like above but for confirmation
 
 // player states
 
-bool isBlocking;
+bool isBlocking; // for the blocking function
 
 // vague check of stats
 
-bool obsfucateStats = true;
+bool obsfucateStats = true; // when on, this should make stats vague
 
 string obPlayerHealth; // makes for some nice flavour text
 string obPlayerStrength; // also reads real nice
@@ -63,7 +65,7 @@ string obPlayerAccuracy; // observe the opposite of below this line
 
 // enemy stats
 
-int enemyType;
+int enemyType; // rolls for a random enemy room
 string enemyName; // sets the output name and is for any necessary checks
 string enemyArticle; // for phrasing text output in a cohesive way
 string capitalArticle; // because setting a function to auto-capitalise is too hard (I don't know how.)
@@ -74,17 +76,17 @@ int enemyCashWorth; // both cash worth and min should equal to the max. ie. if m
 int enemyCashMin; // check line before
 bool enemyIntimidation; // allows enemies to have opening moves/first attacks
 bool enemyTakesAdvantage; // usually true, but can be false. used mostly for Crit Fails
-string enemyAttackText;
+string enemyAttackText; // gives flavour to an enemy's attack, should be initialised to "hits"
 int enemyFloorBoost;
 
 // random number catch
 
 int playerAttRoll; // player attack
 int playerActRoll; // player action (why these are in two different orders is honestly beyond me)
-int playerBlockRoll;
+int playerBlockRoll; // rolls how much the player blocks an attack for, probably not in use rn...
 int enemyActRoll; // enemy action
 int enemyAttRoll; // enemy attack
-int playerDodgeRoll;
+int playerDodgeRoll; // should be additonal chance to not get hit
 int LuckRoll;
 int playerCritFail;
 int enemyCritFail; // honestly not really necessary, just here cause im mirroring the code, maybe use for self destruct type moves?
@@ -117,6 +119,15 @@ bool hasContactLens;
 bool usedContactLens;
 int contactLensPrice;
 
+// Med Room
+
+int nursePrice;
+
+int lowHealPrice;
+int midHealPrice;
+int fullHealPrice;
+
+int nurseHealAmount;
 
 // room and floor generation
 
@@ -144,6 +155,11 @@ string gameOverBlurb;
 // floor data
 
 bool isShopping = false;
+bool isMedBay = false;
+bool isPitfall = false;
+bool isSacrifice = false;
+bool isItemFind = false;
+bool isEmptyRoom = false;
 bool isBattling = false;
 bool battleLoop = false;
 
@@ -162,6 +178,8 @@ int shareVersion = 0;
 int revisionVersion = 0;
 int minorVersion = 0;
 
+// variable safety line
+
 int main () {
 
     system ("color 08");
@@ -173,7 +191,7 @@ int main () {
     releaseState = "alpha";
     majorVersion = 0;
     shareVersion = 1;
-    revisionVersion = 1;
+    revisionVersion = 2;
     minorVersion = 0;
 
     // seed the rng
@@ -224,7 +242,7 @@ int main () {
 
     getline (cin, playerEntry);
 
-    if (playerEntry == "debug" || playerEntry == "Debug") {
+    if (playerEntry == "toss" || playerEntry == "Toss") {
 
         if (tossFreshBang == false) {
 
@@ -251,46 +269,6 @@ int main () {
             system ("pause");
 
         };
-
-        // bool enableDesbug;
-
-//        setFirstTime = true;
-//
-//        if (setFirstTime = true) {
-//
-//            cout << "[DEBUG ENABLED]";
-//
-//            setDesbug = true;
-//
-//            cout << "\n\n";
-//
-//            system ("pause");
-//
-//            continue;
-//
-//            // goto startPage;
-//
-//        } else if (setDesbug = true) {
-//
-//            cout << "\n\n";
-//
-//            cout << "[DEBUG DISABLED]";
-//
-//            setDesbug = false;
-//
-//            cout << "\n\n";
-//
-//            system ("pause");
-//
-//            continue;
-//
-//            // goto startPage;
-//
-//        } else {
-//
-//            setFirstTime = false;
-//
-//        };
 
     } else if (playerEntry == "about" || playerEntry == "About") {
 
@@ -373,11 +351,63 @@ int main () {
 
         } else {
 
-            allowFlash = true;
+            allowFlash = false;
 
             cout << "\n\n";
 
-            cout << "Flash effects are enabled. [blink, blink]";
+            cout << "Flash effects are disabled. [not so flashy now, huh?]";
+
+            cout << "\n\n";
+
+            system ("pause");
+
+            continue;
+
+            // goto startPage;
+
+        };
+
+    } else if (playerEntry == "hideStats" || playerEntry == "hide stats" || playerEntry == "hidestats" || playerEntry == "intuition" || playerEntry == "in tune" || playerEntry == "1 hp") {
+
+        if (obsfucateStats == true) {
+
+            obsfucateStats = false;
+
+            cout << "\n\n";
+
+            cout << "What are you, a doctor? [Vague Stats Enabled]";
+
+            cout << "\n\n";
+
+            system ("pause");
+
+            continue;
+
+            // goto startPage;
+
+        } else if (allowFlash == false) {
+
+            obsfucateStats = true;
+
+            cout << "\n\n";
+
+            cout << "Your\'e in tune with your body. [Precise Stats Enabled]";
+
+            cout << "\n\n";
+
+            system ("pause");
+
+            continue;
+
+            // goto startPage;
+
+        } else {
+
+            obsfucateStats = false;
+
+            cout << "\n\n";
+
+            cout << "What are you, a doctor? [Vague Stats Enabled]";
 
             cout << "\n\n";
 
@@ -395,11 +425,15 @@ int main () {
 
         goto controlQuit;
 
-    } else {
+    } else if (playerEntry == "") {
 
         startMenu = false;
 
-        // continue;
+    } else {
+
+        // startMenu = false;
+
+        continue;
 
         // goto startPage;
 
@@ -577,10 +611,13 @@ int main () {
         while (settingStats == true);
 
 
-        playerHealth = 100;
+        playerMaxHealth = 100;
+
+        playerHealth = playerMaxHealth;
         // playerStrength = rand () % 5 + 5;
         playerLuck = rand () % 7;
         // playerAccuracy = rand () % 5 + 10;
+        playerDefence = 5;
 
         currentFloor = 0;
 
@@ -829,7 +866,7 @@ int main () {
 
                 getline (cin, playerEntry);
 
-                if (playerEntry == "proceed" || playerEntry == "go" || playerEntry == "1" || playerEntry == "enter" || playerEntry == "Proceed" || playerEntry == "door 1" || playerEntry == "Go" || playerEntry == "Enter" || playerEntry == "Door 1" || playerEntry == "enter room" || playerEntry == "Enter room" || playerEntry == "door1" || playerEntry == "Enter door" || playerEntry == "enter door" || playerEntry == "Door1") {
+                if (playerEntry == "" || playerEntry == "proceed" || playerEntry == "go" || playerEntry == "1" || playerEntry == "enter" || playerEntry == "Proceed" || playerEntry == "door 1" || playerEntry == "Go" || playerEntry == "Enter" || playerEntry == "Door 1" || playerEntry == "enter room" || playerEntry == "Enter room" || playerEntry == "door1" || playerEntry == "Enter door" || playerEntry == "enter door" || playerEntry == "Door1") {
 
                 roomChoice = false;
 
@@ -1412,11 +1449,41 @@ int main () {
 
         system ("pause");
 
-        if (roomTypeNum == 1 || roomTypeNum == 2) {
+        if (roomTypeNum == 1) { // goes to shop
 
             isShopping = true;
 
             goto shopRoom;
+
+        } else if (roomTypeNum == 2) { // goes to medic
+
+            isMedBay = true;
+
+            goto medBay;
+
+        } else if (roomTypeNum == 3) { // goes to pitfall
+
+            isPitfall = true;
+
+            goto pitFall;
+
+        } else if (roomTypeNum == 4) { // goes to sacrificial room
+
+            isSacrifice = true;
+
+            goto sacrificeRoom;
+
+        } else if (roomTypeNum == 5) { // goes to chest room
+
+            isItemFind = true;
+
+            goto itemFind;
+
+        } else if (roomTypeNum == 6) { // goes to empty room
+
+            isEmptyRoom = true;
+
+            goto emptyRoom;
 
         } else {
 
@@ -1426,7 +1493,272 @@ int main () {
 
         };
 
-    shopRoom:
+    medBay: // games second healing system, first working
+
+    system ("cls");
+
+    system ("color 0d");
+
+    nursePrice = rand () % 50 + 50;
+
+    lowHealPrice = nursePrice / 4;
+
+    midHealPrice = nursePrice / 2;
+
+    fullHealPrice = nursePrice;
+
+    randTextNum = rand () % 3 + 1;
+
+    do {
+
+        system ("cls");
+
+        if (randTextNum == 1) {
+
+            cout << "[Medbay]";
+
+        } else {
+
+            cout << "[Hospital]";
+
+        }
+
+        cout << "\n\n------------\n\n";
+
+        cout << "You have " << playerCash << " credits.";
+
+        cout << "\n\n------------\n\n";
+
+        cout << "Current Prices: ";
+
+        cout << "\n\n";
+
+        cout << "[1] Some painkillers: " << lowHealPrice;
+
+        cout << "\n\n";
+
+        cout << "[2] A few stitches: " << midHealPrice;
+
+        cout << "\n\n";
+
+        cout << "[3] A full recovery: " << fullHealPrice;
+
+        cout << "\n\n";
+
+        cout << "Tell me what you want me to give you. (Or you can just leave)";
+
+        cout << "\n\n";
+
+        cout << "> ";
+
+        getline (cin, playerEntry);
+
+        if (playerEntry == "1" || playerEntry == "painkillers" || playerEntry == "some painkillers" || playerEntry == "pk") {
+
+            if (playerCash >= lowHealPrice) {
+
+                nurseHealAmount = playerMaxHealth / 4;
+
+                playerHealth = playerHealth + nurseHealAmount;
+
+                playerCash = playerCash - lowHealPrice;
+
+                cout << "\n\n";
+
+                cout << "\"Now only take one of those every two turns, ok?\"";
+
+                cout << "\n\n";
+
+                system ("pause");
+
+                isMedBay = false;
+
+                break;
+
+            } else {
+
+                cout << "\n\n";
+
+                cout << "\"Those are cheap, not free.\"";
+
+                cout << "\n\n";
+
+                system ("pause");
+
+                continue;
+
+            };
+
+        } else if (playerEntry == "2" || playerEntry == "stitches" || playerEntry == "a few stitches" || playerEntry == "s") {
+
+            if (playerCash >= midHealPrice) {
+
+                nurseHealAmount = playerMaxHealth / 2;
+
+                playerHealth = playerHealth + nurseHealAmount;
+
+                playerCash = playerCash - midHealPrice;
+
+                cout << "\n\n";
+
+                cout << "\"That's the worst of it. Just don\'t move too much.\"";
+
+                cout << "\n\n";
+
+                system ("pause");
+
+                isMedBay = false;
+
+                break;
+
+            } else {
+
+                cout << "\n\n";
+
+                cout << "\"I\'m not gonna do that without payment.\"";
+
+                cout << "\n\n";
+
+                system ("pause");
+
+                continue;
+
+            };
+
+        } else if (playerEntry == "3" || playerEntry == "recovery" || playerEntry == "full recovery" || playerEntry == "r") {
+
+            if (playerCash >= fullHealPrice) {
+
+                nurseHealAmount = playerMaxHealth;
+
+                playerHealth = playerHealth + nurseHealAmount;
+
+                playerCash = playerCash - fullHealPrice;
+
+                cout << "\n\n";
+
+                cout << "\"You should be all good now.\"";
+
+                cout << "\n\n";
+
+                system ("pause");
+
+                isMedBay = false;
+
+                break;
+
+            } else {
+
+                cout << "\n\n";
+
+                cout << "\"I don\'t work for free.\"";
+
+                cout << "\n\n";
+
+                system ("pause");
+
+            };
+
+        } else if (playerEntry == "leave" || playerEntry == "l" || playerEntry == "exit" || playerEntry == "e") {
+
+            isMedBay = false;
+
+        } else {
+
+            continue;
+
+        };
+
+        if (playerHealth >= playerMaxHealth) {
+
+            playerHealth = playerMaxHealth;
+
+        };
+
+    }
+    while (isMedBay == true);
+
+    totalRoomsPassed = totalRoomsPassed + 1;
+
+    system ("cls");
+
+    system ("color 08");
+
+    cout << "\n\n";
+
+    cout << "You left the Hospital";
+
+    cout << "\n\n";
+
+    system ("pause");
+
+    goto genRoom;
+
+    pitFall: // random chance to get hurt or die
+
+    totalRoomsPassed = totalRoomsPassed + 1;
+
+    system ("cls");
+
+    isPitfall = false;
+
+    cout << "[ Room Not Finished, come back later. (2) ]";
+
+    cout << "\n\n";
+
+    system ("pause");
+
+    goto genRoom;
+
+    sacrificeRoom: // sacrifice health or money for stat increases
+
+    totalRoomsPassed = totalRoomsPassed + 1;
+
+    system ("cls");
+
+    isSacrifice = false;
+
+    cout << "[ Room Not Finished, come back later. (3) ]";
+
+    cout << "\n\n";
+
+    system ("pause");
+
+    goto genRoom;
+
+    itemFind: // basically a chest room
+
+    totalRoomsPassed = totalRoomsPassed + 1;
+
+    system ("cls");
+
+    isItemFind = false;
+
+    cout << "[ Room Not Finished, come back later. (4) ]";
+
+    cout << "\n\n";
+
+    system ("pause");
+
+    goto genRoom;
+
+    emptyRoom: // dud room
+
+    totalRoomsPassed = totalRoomsPassed + 1;
+
+    system ("cls");
+
+    isEmptyRoom = false;
+
+    cout << "[ Room Not Finished, come back later. (5) ]";
+
+    cout << "\n\n";
+
+    system ("pause");
+
+    goto genRoom;
+
+    shopRoom: // buy player improvements here
 
         rationPrice = 5;
 
@@ -1747,7 +2079,7 @@ int main () {
 
             if (enemyType == 1) {
 
-                enemyName = "Spider";
+                enemyName = "Giant Spider";
                 enemyArticle = "the";
                 capitalArticle = "The";
                 enemyAttackText = "bites";
@@ -1769,8 +2101,8 @@ int main () {
                 enemyHealth = 25 + (playerStrength / 3);
                 enemyStrength = 15;
                 enemyAccuracy = 15;
-                enemyCashWorth = 9;
-                enemyCashMin = 1;
+                enemyCashWorth = 10;
+                enemyCashMin = 10;
                 enemyTakesAdvantage = true;
 
                 battleLoop = true;
@@ -1816,6 +2148,21 @@ int main () {
                 enemyAccuracy = 20;
                 enemyCashWorth = 19;
                 enemyCashMin = 1;
+                enemyTakesAdvantage = true;
+
+                battleLoop = true;
+
+            } else if (enemyType == 6) {
+
+                enemyName = "Giant Snake";
+                enemyArticle = "the";
+                capitalArticle = "The";
+                enemyAttackText = "bites";
+                enemyHealth = 35 + playerStrength;
+                enemyStrength = 20;
+                enemyAccuracy = 25;
+                enemyCashWorth = 20;
+                enemyCashMin = 20;
                 enemyTakesAdvantage = true;
 
                 battleLoop = true;
@@ -2077,7 +2424,7 @@ int main () {
 
                     isBlocking = true;
 
-                  } else if (playerEntry == "giveup" || playerEntry == "surrender" || playerEntry == "no" || playerEntry == "run away") {
+                  } else if (playerEntry == "giveup" || playerEntry == "surrender" || playerEntry == "no" || playerEntry == "run away" || playerEntry == "run" || playerEntry == "leave") {
 
                     if (tossFreshBang == true) {
 
@@ -2213,6 +2560,8 @@ int main () {
 
                 cout << "\n\n";
 
+                enemyAttRoll = enemyAttRoll - (playerDefence / 2);
+
                 cout << capitalArticle << " " << enemyName << " " << enemyAttackText << " you for " << enemyAttRoll << ".";
 
                 playerHealth = playerHealth - enemyAttRoll;
@@ -2251,7 +2600,9 @@ int main () {
 
                         system ("color 06");
 
-                        cout << capitalArticle << " " << enemyName << " hit you for " << enemyAttRoll << ".";
+                        enemyAttRoll = enemyAttRoll - (playerDefence / 3);
+
+                        cout << capitalArticle << " " << enemyName << " " << enemyAttackText << " you for " << enemyAttRoll << ".";
 
                         playerHealth = playerHealth - enemyAttRoll;
 
@@ -2329,7 +2680,7 @@ int main () {
 
                     cout << "\n\n\n\n  ------------\n\n";
 
-                    randTextNum = rand () % 14;
+                    randTextNum = rand () % 15;
 
                     if (randTextNum == 0) {
 
@@ -2386,6 +2737,10 @@ int main () {
                     } else if (randTextNum == 13) {
 
                         cout << "\"Some quote about war.\" - War Man";
+
+                    } else if (randTextNum == 14) {
+
+                        cout << "That wasn\'t fair....";
 
                     } else {
 
