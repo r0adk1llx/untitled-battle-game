@@ -193,7 +193,7 @@ int main () {
     majorVersion = 0;
     shareVersion = 1;
     revisionVersion = 3;
-    minorVersion = 0;
+    minorVersion = 1;
 
     // seed the rng
 
@@ -1016,6 +1016,12 @@ int main () {
                                         cout << "\n\n";
 
                                         playerHealth = playerHealth + healPlayer;
+
+                                        if (playerHealth >= playerMaxHealth) {
+
+                                            playerHealth = playerMaxHealth;
+
+                                        };
 
                                         system ("pause");
 
