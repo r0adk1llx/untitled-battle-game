@@ -102,6 +102,8 @@ int playerDefend;
 
 int cashEarned;
 
+int luckGunSpin;
+
 // store and inventory
 
 bool checkingInventory;
@@ -149,6 +151,17 @@ bool makingItem;
 
 vector<string> itemInventory {"none"};
 string itemCheck;
+
+// free item
+
+int randConsumable;
+int randWeapon;
+
+int freeItemPick;
+
+bool pickingItem;
+
+string pedestalWeapon;
 
 // room and floor generation
 
@@ -203,7 +216,7 @@ int minorVersion = 0;
 
 int main () {
 
-    system ("color 08");
+    system ("title Untitled Battle Game");
 
     tossFreshBang = false;
 
@@ -211,11 +224,11 @@ int main () {
 
     releaseState = "alpha";
     majorVersion = 0;
-    shareVersion = 1;
-    revisionVersion = 4;
+    shareVersion = 2;
+    revisionVersion = 0;
     minorVersion = 0;
 
-    // seed the rng
+    // seed the rng, while its ok to only seed once, I think it may be better to re-seed whenever a section with rng is called upon. will not be changing it for now tho
 
     srand (time(NULL));
 
@@ -227,17 +240,77 @@ int main () {
 
     system ("cls");
 
-    cout << "Version " << releaseState << " " << majorVersion << "." << shareVersion << "." << revisionVersion << "." << minorVersion ; //ver number is major.share release.revision.minor
+    system ("color 08");
+
+    cout << "Version " << releaseState << " " << majorVersion << "." << shareVersion;
+
+    if (revisionVersion > 0 && minorVersion > 0) {
+
+        cout << "." << revisionVersion << "." << minorVersion ; //ver number is major.share release.revision.minor
+
+    } else if (revisionVersion > 0 && minorVersion == 0) {
+
+        cout << "." << revisionVersion;
+
+    };
 
     cout << "\n\n";
 
-    cout << "Warning: There is some minor flashing that can be enabled in this game. [Currently set to on for testing reasons]";
+    // Disclaimers go below
+
+    cout << "Current Settings:";
+
+    if (secretsEnabled == true) {
+
+        cout << "\n\n";
+
+        cout << "[ Secrets ]";
+
+        system ("title Untitled Battle Game: NYAN");
+
+    } else if (secretsEnabled == false && allowFlash == false) {
+
+        system ("title Untitled Battle Game: For Migraines");
+
+    } else {
+
+        system ("title Untitled Battle Game");
+
+    };
+
+    cout << "\n\n";
+
+    cout << "[ FLASH ] ";
+
+    if (allowFlash == true) {
+
+        cout << "Enabled";
+
+    } else if (allowFlash == false) {
+
+        cout << "Disabled";
+
+    } else {
+
+        cout << "flash not set.";
+
+    };
+
+    // toss is effectively the debug command
 
     if (tossFreshBang == true) {
 
         cout << "\n\n";
 
-        cout << "[TOSS]";
+        cout << "[ TOSS ]";
+
+    };
+
+    if (obsfucateStats == false) {
+
+        cout << "\n\n";
+
+        cout << "[ STATS ]";
 
     };
 
@@ -467,6 +540,82 @@ int main () {
 
     initializeGame:
 
+        if (secretsEnabled == true) {
+
+            randTextNum = rand () % 16;
+
+                    if (randTextNum == 0) {
+
+                        system ("title Untitled Battle Game: How Unfortunate.");
+
+                    } else if (randTextNum == 1) {
+
+                        system ("title Untitled Battle Game: no.");
+
+                    } else if (randTextNum == 2) {
+
+                        system ("title Untitled Battle Game: \"And thus your adventure ends here.\"");
+
+                    } else if (randTextNum == 3) {
+
+                        system ("title Untitled Battle Game: You Were Slain.");
+
+                    } else if (randTextNum == 4) {
+
+                        system ("title Untitled Battle Game: You Died");
+
+                    } else if (randTextNum == 5) {
+
+                        system ("title Untitled Battle Game: What it says on the tin.");
+
+                    } else if (randTextNum == 6) {
+
+                        system ("title Untitled Battle Game: Good Night");
+
+                    } else if (randTextNum == 7) {
+
+                        system ("title Untitled Battle Game: \"Game Over, Man.\"");
+
+                    } else if (randTextNum == 8) {
+
+                        system ("title Untitled Battle Game: Bummer.");
+
+                    } else if (randTextNum == 9) {
+
+                        system ("title Untitled Battle Game: Oh.");
+
+                    } else if (randTextNum == 10) {
+
+                        system ("title Untitled Battle Game: And they said this was a skill-based game.");
+
+                    } else if (randTextNum == 11) {
+
+                        system ("title Untitled Battle Game: Skill Issue.");
+
+                    } else if (randTextNum == 12) {
+
+                        system ("title Untitled Battle Game: That was mid, ngl.");
+
+                    } else if (randTextNum == 13) {
+
+                        system ("title Untitled Battle Game: \"Some quote about war.\" \n                    - War Man");
+
+                    } else if (randTextNum == 14) {
+
+                        system ("title Untitled Battle Game: That wasn\'t fair....");
+
+                    } else if (randTextNum == 15) {
+
+                        system ("title Untitled Battle Game: \"That\'s a feature, not a bug.\"");
+
+                    } else {
+
+                        system ("title Untitled Battle Game: Oh.");
+
+                    };
+
+        };
+
         system ("cls");
 
         totalRoomsPassed = 0;
@@ -672,12 +821,6 @@ int main () {
             obsfucateStats = false;
 
         };
-
-
-
-
-
-
 
         // health ob
 
@@ -1225,7 +1368,13 @@ int main () {
 
         system ("color 08");
 
-        roomTypeNum = rand () % 9 + 1;
+        roomTypeNum = rand () % 12 + 1;
+
+        if (roomsPassed == roomCount || roomsPassed == 1) {
+
+            roomTypeNum = 7;
+
+        };
 
         cout << "Just before you enter the room, you note that:";
 
@@ -1393,6 +1542,12 @@ int main () {
 
             goto emptyRoom;
 
+        } else if (roomTypeNum >= 7) {
+
+            isBattling = true;
+
+            goto battleRoom;
+
         } else {
 
             isBattling = true;
@@ -1427,7 +1582,7 @@ int main () {
 
         } else {
 
-            cout << "[Hospital]";
+            cout << "[Hospital | Q to leave]";
 
         }
 
@@ -1453,7 +1608,7 @@ int main () {
 
         cout << "\n\n";
 
-        cout << "Tell me what you want me to give you. (\"Q\" to leave)";
+        cout << "Tell me what you want me to give you.";
 
         cout << "\n\n";
 
@@ -1606,7 +1761,7 @@ int main () {
 
     cout << "\n\n";
 
-    cout << "You left the Hospital";
+    cout << "[ You left the Hospital ]";
 
     cout << "\n\n";
 
@@ -1626,7 +1781,13 @@ int main () {
 
     cout << "\n\n";
 
-    cout << "You found a mystery box. Would you like to open it for a random weapon?";
+    cout << "You found a mystery box. Would you like to spend 25 credits to open it for a random weapon?";
+
+    openBox:
+
+    cout << "\n\n";
+
+    cout << "You have " << playerCash << " credits.";
 
     cout << "\n\n";
 
@@ -1636,7 +1797,25 @@ int main () {
 
     if (playerEntry == "y" || playerEntry == "yes" || playerEntry == "Y" || playerEntry == "Yes") {
 
-        makingItem = true;
+        if (playerCash >= 25) {
+
+            playerCash = playerCash - 25;
+
+            makingItem = true;
+
+        } else if (playerCash < 25) {
+
+            system ("cls");
+
+            cout << "You realise that you don\'t have enough for the box.";
+
+            cout << "\n\n";
+
+            system ("pause");
+
+            goto leaveBox;
+
+        }
 
     } else if (playerEntry == "n" || playerEntry == "no" || playerEntry == "N" || playerEntry == "No") {
 
@@ -1652,7 +1831,7 @@ int main () {
 
         system ("cls");
 
-        randItem = rand () % 5 + 1;
+        randItem = rand () % 6 + 1;
 
         cout << "\n\n";
 
@@ -1700,6 +1879,12 @@ int main () {
 
                 itemString = "Keyboard";
 
+            } else if (randItem == 7) {
+
+                currentItem = "LuckGun";
+
+                itemString = "RNG Revolver";
+
             } else {
 
                 currentItem = "none";
@@ -1723,6 +1908,8 @@ int main () {
                 cout << "You already have the " << itemString << ".";
 
                 system ("pause");
+
+                goto anotherBox;
 
             } else {
 
@@ -1762,9 +1949,7 @@ int main () {
 
                     system ("pause");
 
-                    checkingItem = false;
-
-                    makingItem = false;
+                    goto anotherBox;
 
                 } else {
 
@@ -1773,6 +1958,18 @@ int main () {
                 };
 
             };
+
+            anotherBox:
+
+            system ("cls");
+
+            cout << "Would you like to open the box again?";
+
+            cout << "\n\n";
+
+            cout << "[Cost: 25 credits]";
+
+            goto openBox;
 
 //            system ("cls");
 //
@@ -1808,7 +2005,7 @@ int main () {
 
     cout << "\n\n";
 
-    cout << "You left the mystery box";
+    cout << "[ You left the mystery box ]";
 
     cout << "\n\n";
 
@@ -1834,13 +2031,286 @@ int main () {
 
     itemFind: // basically a chest room
 
+    system ("cls");
+
+    system ("color 08");
+
+    randConsumable = rand () % 1 + 1;
+
+    randWeapon = rand () % 5 + 1;
+
+    pickingItem = true;
+
+    // make this a do loop
+
+    do {
+
+        system ("cls");
+
+        system ("color 0d");
+
+        cout << "\n\n";
+
+        cout << "[ Pedestal Room ]";
+
+        cout << "\n\n------------\n\n";
+
+        cout << "You walk into the room and see two caged pedestals. \n\nBoth have price signs and a box that is clearly for depositing credits.";
+
+        cout << "\n\n";
+
+        cout << "In the first [1], is a ";
+
+        // put item selector here
+
+        if (randConsumable == 1) {
+
+            cout << "Ration.";
+
+        } else if (randConsumable == 2) {
+
+            cout << "Strength Pill.";
+
+        } else {
+
+            cout << "void where an item should be.";
+
+        };
+
+        cout << "\n\n";
+
+        cout << "The tag says 5 credits."; // its meant to be cheap, but not too cheap
+
+        cout << "\n\n";
+
+        cout << "On the second [2], is a ";
+
+        // put weapon selector here
+
+        if (randWeapon == 1) {
+
+            currentItem = "keyboardAndMouse";
+
+            pedestalWeapon = "Keyboard";
+
+        } else if (randWeapon == 2) {
+
+            currentItem = "kitchenGun";
+
+            pedestalWeapon = "Kitchen Gun";
+
+        } else if (randWeapon == 3) {
+
+            currentItem = "sunBlaster";
+
+            pedestalWeapon = "Sun Blaster";
+
+        } else if (randWeapon == 4) {
+
+            currentItem = "bambooStick";
+
+            pedestalWeapon = "Bamboo Stick";
+
+        } else if (randWeapon == 5) {
+
+            currentItem = "diceOnString";
+
+            pedestalWeapon = "Dice on a String";
+
+        } else if (randWeapon == 6) {
+
+            currentItem = "yoyoMan";
+
+            pedestalWeapon = "Yo-yo";
+
+        } else if (randWeapon == 7) {
+
+            currentItem = "LuckGun";
+
+            pedestalWeapon = "RNG Revolver";
+
+        } else {
+
+            pedestalWeapon = "void";
+
+        };
+
+        cout << pedestalWeapon << ".";
+
+        cout << "\n\n";
+
+        cout << "The sign on this one says 35 credits."; // honestly its an arbitrary number, i could deem it too cheap or too expensive at any time
+
+        cout << "\n\n";
+
+        cout << "Which would you like to take?";
+
+        cout << "\n\n------------\n\n";
+
+        cout << "You have " << playerCash << " credits."; // how else will they know how much they have so they know why they cant get anything
+
+        cout << "\n\n------------\n\n";
+
+        cout << "> ";
+
+        getline (cin, playerEntry);
+
+        // give stuff to player (or dont)
+
+        if (playerEntry == "1" || playerEntry == "first") {
+
+            if (playerCash >= 5) {
+
+                playerCash = playerCash - 5;
+
+                if (randConsumable == 1) {
+
+                    system ("cls");
+
+                    cout << "\n\n";
+
+                    cout << "You deposit your credits in the box next to the pedestal. The cage lifts, allowing you to take the Ration.";
+
+                    rationCount = rationCount + 1;
+
+                    pickingItem = false;
+
+                    cout << "\n\n";
+
+                    system ("pause");
+
+                } else if (randConsumable == 2) {
+
+                    system ("cls");
+
+                    cout << "\n\n";
+
+                    cout << "You deposit your credits in the box next to the pedestal. The cage lifts, allowing you to take the Strength Pill.";
+
+                    funnyPillCount = funnyPillCount + 1;
+
+                    pickingItem = false;
+
+                    cout << "\n\n";
+
+                    system ("pause");
+
+                } else {
+
+                    system ("cls");
+
+                    cout << "\n\n";
+
+                    cout << "You deposit your credits in the box next to the pedestal. The cage lifts, allowing the void to take you.";
+
+                    pickingItem = false;
+
+                    cout << "\n\n";
+
+                    system ("pause");
+
+                    goto voidCall;
+
+                };
+
+            } else {
+
+                system ("cls");
+
+                cout << "\n\n";
+
+                cout << "You don\'t have enough for that.";
+
+                cout << "\n\n";
+
+                system ("pause");
+
+                continue;
+
+            };
+
+        } else if (playerEntry == "q" || playerEntry == "Q") {
+
+            pickingItem = false;
+
+        } else if (playerEntry == "2" || playerEntry == "second") {
+
+            if (playerCash >= 35) {
+
+                playerCash = playerCash - 35;
+
+                system ("cls");
+
+                cout << "\n\n";
+
+                cout << "You deposit your credits in the box next to the pedestal. The cage lifts, allowing you to take the " << pedestalWeapon << ".";
+
+                if (randWeapon >= 1 && randWeapon <= 6) {
+
+                    itemInventory.erase (itemInventory.begin());
+
+                    itemInventory.push_back(pedestalWeapon);
+
+                    equippedWeapon = currentItem;
+
+                    cout << "\n\n";
+
+                    system ("pause");
+
+                } else {
+
+                    system ("cls");
+
+                    cout << "\n\n";
+
+                    cout << "You deposit your credits in the box next to the pedestal. The cage lifts, allowing the void to take you.";
+
+                    pickingItem = false;
+
+                    cout << "\n\n";
+
+                    system ("pause");
+
+                    goto voidCall;
+
+                };
+
+            } else {
+
+                system ("cls");
+
+                cout << "\n\n";
+
+                cout << "You don\'t have enough for that.";
+
+                cout << "\n\n";
+
+                system ("pause");
+
+                continue;
+
+            };
+
+        } else {
+
+            continue;
+
+        };
+
+    }
+    while (pickingItem == true);
+
+    // close item find
+
     totalRoomsPassed = totalRoomsPassed + 1;
 
     system ("cls");
 
     isItemFind = false;
 
-    cout << "[ Room Not Finished, come back later. (4) ]";
+    cout << "\n\n";
+
+    cout << "[ You left the Room ]";
 
     cout << "\n\n";
 
@@ -1849,6 +2319,8 @@ int main () {
     goto genRoom;
 
     emptyRoom: // dud room
+
+    // close empty room
 
     totalRoomsPassed = totalRoomsPassed + 1;
 
@@ -1904,7 +2376,7 @@ int main () {
 
             system ("color 02");
 
-            cout << "[SHOP]";
+            cout << "[SHOP | Q to leave]";
 
             cout << "\n\n";
 
@@ -1945,10 +2417,6 @@ int main () {
             cout << "\n\n---------\n\n";
 
             cout << "\"What would you like to purchase?\"";
-
-            cout << "\n\n";
-
-            cout << "(\"Q\" to leave)";
 
             cout << "\n\n";
 
@@ -2142,13 +2610,43 @@ int main () {
 
                 cout << "\n\n";
 
-                cout << "You left the Shop.";
+                cout << "[ You left the Shop. ]";
 
                 cout << "\n\n";
 
                 system ("pause");
 
                 isShopping = false;
+
+            } else if (playerEntry == "void") {
+
+                if (tossFreshBang == true) {
+
+                    system ("cls");
+
+                    cout << "\n\n";
+
+                    cout << "void....";
+
+                    pickingItem = false;
+
+                    cout << "\n\n";
+
+                    system ("pause");
+
+                    goto voidCall;
+
+                } else if (tossFreshBang == false) {
+
+                    system ("cls");
+
+                    cout << "\n\n";
+
+                    cout << ". . .";
+
+                    continue;
+
+                }
 
             } else {
 
@@ -2179,11 +2677,17 @@ int main () {
 
         turnsPassed = 0;
 
+        enemyType = rand () % (currentFloor + 2);
+
+        if (roomsPassed == roomCount || roomsPassed == 1) {
+
+            enemyType = (rand () % (currentFloor + 1)) + 1;
+
+        };
+
         do {
 
             randTextNum = rand () % 19 + 1;
-
-            enemyType = rand () % (currentFloor + 2);
 
             if (enemyType == 1) {
 
@@ -2421,6 +2925,90 @@ int main () {
 
                     weaponFlavour = "punch";
 
+                } else if (equippedWeapon == "LuckGun") {
+
+                    cout << "The gun\'s chamber spins.";
+
+                    luckGunSpin = rand () % 8 + 1;
+
+                    if (luckGunSpin == 1) {
+
+                        playerWeaponBonus = -150;
+
+                        weaponFlavour = "puff smoke at [1]";
+
+                    } else if (luckGunSpin == 2) {
+
+                        playerWeaponBonus = 2;
+
+                        weaponFlavour = "shoot a foam dart at [2]";
+
+                    } else if (luckGunSpin == 3) {
+
+                        playerWeaponBonus = 5;
+
+                        weaponFlavour = "shoot a pellet at [3]";
+
+                    } else if (luckGunSpin == 4) {
+
+                        playerWeaponBonus = 6;
+
+                        weaponFlavour = "shoot a bullet at [4]";
+
+                    } else if (luckGunSpin == 5) {
+
+                        playerWeaponBonus = 15;
+
+                        weaponFlavour = "shoot a shotgun shell at [5]";
+
+                    } else if (luckGunSpin == 6) {
+
+                        playerWeaponBonus = 13;
+
+                        weaponFlavour = "shoot a flame at [6]";
+
+                    } else if (luckGunSpin == 7) {
+
+                        playerWeaponBonus = 7;
+
+                        weaponFlavour = "shoot a coin at [7]";
+
+                        playerCash = playerCash + 1;
+
+                    } else if (luckGunSpin == 8) {
+
+                        playerWeaponBonus = 20;
+
+                        weaponFlavour = "shoot a beam at [8]";
+
+                    } else if (luckGunSpin == 9) {
+
+                        playerWeaponBonus = 50;
+
+                        randTextNum = rand () % 1 + 1;
+
+                        if (randTextNum == 1) {
+
+                            weaponFlavour = "obliterate [9]";
+
+                        } else if (randTextNum == 2) {
+
+                            weaponFlavour = "Game & Watch [9]";
+
+                        } else {
+
+                            weaponFlavour = "obliterate [9]";
+
+                        };
+
+                    } else {
+
+                        playerWeaponBonus = 1;
+
+                        weaponFlavour = "shoot a dud at";
+
+                    };
+
                 } else {
 
                     playerWeaponBonus = 0;
@@ -2429,7 +3017,7 @@ int main () {
 
                     weaponFlavour = "punch";
 
-                }
+                };
 
                 cout << "\n\n---------\n\n";
 
@@ -2493,19 +3081,19 @@ int main () {
 
                         playerAttRoll = rand () % 20 + (playerStrength / 2);
 
-                        playerAttRoll = playerAttRoll + playerWeaponBonus;
+                        playerAttRoll = playerAttRoll + (playerWeaponBonus);
 
                     } else {
 
                         playerAttRoll = rand () % 20 - (playerStrength / 2);
 
-                        playerAttRoll = playerAttRoll + playerWeaponBonus;
+                        playerAttRoll = playerAttRoll + (playerWeaponBonus);
 
                     };
 
                     if (playerAttRoll < (playerStrength / 4)) {
 
-                        playerAttRoll = playerStrength / 4;
+                        playerAttRoll = (playerStrength / 4) + (playerWeaponBonus);
 
                     };
 
@@ -2517,7 +3105,7 @@ int main () {
 
                     } else if (playerActRoll == 20) {
 
-                        playerAttRoll = (rand () % 15 + 5) + playerStrength;
+                        playerAttRoll = (rand () % 15 + 5) + playerStrength + playerWeaponBonus;
 
                         if (randTextNum = 1) {
 
@@ -2535,13 +3123,21 @@ int main () {
 
                         cout << "\n\n";
 
+                        if (allowFlash == true) {
+
                         system ("color a0");
+
+                        };
 
                         cout << "[" << playerBigHit << "]\n\n";
 
+                        if (allowFlash == true) {
+
                         system ("color 06");
 
-                        cout << "You hit " << enemyArticle << " " << enemyName << " for " << playerAttRoll << ".";
+                        };
+
+                        cout << "You " << weaponFlavour << " " << enemyArticle << " " << enemyName << " for " << playerAttRoll << ".";
 
                         enemyHealth = enemyHealth - playerAttRoll;
 
@@ -2847,11 +3443,19 @@ int main () {
 
                         cout << "\n\n";
 
+                        if (allowFlash == true) {
+
                         system ("color 60");
+
+                        };
 
                         cout << "[" << enemySmashHit << "]\n\n";
 
+                        if (allowFlash == true) {
+
                         system ("color 06");
+
+                        };
 
                         enemyAttRoll = enemyAttRoll - (playerDefence / 3);
 
@@ -2927,11 +3531,11 @@ int main () {
 
                     system ("cls");
 
-                    // if (allowFlash == true) {
+                    if (allowFlash == true) {
 
                         system ("color 40");
 
-                    // };
+                    };
 
                     cout << "\n\n";
 
@@ -2939,11 +3543,17 @@ int main () {
 
                     system ("color 04");
 
+                    if (enemyName == "Void" || enemyName == "void") {
+
+                        system ("color 1F");
+
+                    };
+
                     cout << "\n\n------------------------\n\n";
 
                     cout << "  //  ";
 
-                    randTextNum = rand () % 15;
+                    randTextNum = rand () % 16;
 
                     if (randTextNum == 0) {
 
@@ -3005,6 +3615,10 @@ int main () {
 
                         cout << "That wasn\'t fair....";
 
+                    } else if (randTextNum == 15) {
+
+                        cout << "\"That\'s a feature, not a bug.\"";
+
                     } else {
 
                         cout << "  Oh.  ";
@@ -3015,7 +3629,23 @@ int main () {
 
                     cout << "\n\n          ====          \n\n";
 
-                    cout << capitalArticle << " " << enemyName << " killed you.";
+                    if (enemyName == "void" || enemyName == "Void") {
+
+                        cout << capitalArticle << " " << enemyName << " reset you.";
+
+                    } else if (enemyName != "void" || enemyName != "Void") {
+
+                        cout << capitalArticle << " " << enemyName << " killed you.";
+
+                    } else {
+
+                        cout << capitalArticle << " " << enemyName << "...";
+
+                        cout << "\n\n";
+
+                        cout << "What...?";
+
+                    };
 
                     cout << "\n\n------------------------\n\n";
 
@@ -3057,11 +3687,15 @@ int main () {
 
                         cout << "\n\n";
 
-                        cout << "Restart";
+                        cout << "[1]Restart";
 
                         cout << "\n";
 
-                        cout << "Quit";
+                        cout << "[2]Reset";
+
+                        cout << "\n";
+
+                        cout << "[3]Quit";
 
                         cout << "\n\n";
 
@@ -3069,13 +3703,17 @@ int main () {
 
                         getline (cin, playerEntry);
 
-                        if (playerEntry == "restart" || playerEntry == "Restart" || playerEntry == "r" || playerEntry == "R") {
+                        if (playerEntry == "restart" || playerEntry == "Restart" || playerEntry == "r" || playerEntry == "R" || playerEntry == "1") {
 
                             goto initializeGame;
 
-                        } else if (playerEntry == "quit" || playerEntry == "Quit" || playerEntry == "q" || playerEntry == "Q" || playerEntry == "exit" || playerEntry == "Exit" || playerEntry == "e" || playerEntry == "E") {
+                        } else if (playerEntry == "quit" || playerEntry == "Quit" || playerEntry == "q" || playerEntry == "Q" || playerEntry == "exit" || playerEntry == "Exit" || playerEntry == "e" || playerEntry == "E" || playerEntry == "3") {
 
                             goto controlQuit;
+
+                        } else if (playerEntry == "reset" || playerEntry == "Reset" || playerEntry == "re" || playerEntry == "Re" || playerEntry == "2") {
+
+                            goto startPage;
 
                         } else {
 
@@ -3111,7 +3749,7 @@ int main () {
 
                     cout << "\n\n";
 
-                    cashEarned = rand () % enemyCashWorth + enemyCashMin;
+                    cashEarned = (rand () % enemyCashWorth + enemyCashMin) + (turnsPassed + 2);
 
                     playerStasisCash = playerCash;
 
@@ -3119,7 +3757,7 @@ int main () {
 
                     totalPlayerCash = totalPlayerCash + cashEarned;
 
-                    cout << cashEarned << " currency earned.";
+                    cout << cashEarned << " credits earned.";
 
                     cout << "\n\n";
 
@@ -3178,11 +3816,11 @@ int main () {
 
             system ("cls");
 
-            // if (allowFlash == true) {
+            if (allowFlash == true) {
 
             system ("color a0");
 
-            // };
+            };
 
             cout << "[GAME WIN]";
 
@@ -3272,8 +3910,39 @@ int main () {
 
                     goto gameOverScreen;
 
-        }
+        };
 
+    voidCall:
+
+    system ("cls");
+
+    system ("color 1F");
+
+    cout << "[ VOID TAGGED ]";
+
+    cout << "\n\n";
+
+    cout << "An exception, VOID has occurred at VOID. You will NOT be continuing normally.";
+
+    cout << "\n\n";
+
+    playerHealth = 0;
+
+    capitalArticle = "The";
+
+    enemyName = "Void";
+
+    system ("pause");
+
+    if (allowFlash == true) {
+
+    system ("color 0f");
+
+    system ("color 1F");
+
+    };
+
+    goto playerSlain;
 
     // exit jump; call this when making exit functions
 
