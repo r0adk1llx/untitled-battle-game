@@ -237,7 +237,7 @@ int main () {
     majorVersion = 1;
     shareVersion = 0;
     revisionVersion = 0;
-    minorVersion = 0;
+    minorVersion = 1;
 
     // seed the rng, while its ok to only seed once, I think it may be better to re-seed whenever a section with rng is called upon. will not be changing it for now tho
 
@@ -4382,6 +4382,8 @@ int main () {
                         } else if (playerEntry == "change" || playerEntry == "Change" || playerEntry == "Ch" || playerEntry == "ch" || playerEntry == "2" || playerEntry == "Rc" || playerEntry == "rc") {
 
                             settingStats = true;
+
+                            randomStats = false;
 
                             goto initializeGame;
 
