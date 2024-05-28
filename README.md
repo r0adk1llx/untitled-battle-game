@@ -13,6 +13,8 @@ random rooms
 
 flashing (turn this on or off on the title screen with "flash" command)
 
+*some secrets*
+
 other stuff, i dunno i havent touched this project in months.
 
 *honestly this may see one or two final updates just to freshen the game up/add some qol (not like theres much to have)/add some gamemodes and game config*
